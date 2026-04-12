@@ -55,7 +55,7 @@ tbody tr.flag-inactive{background:rgba(192,57,43,0.06);}
 tbody tr.flag-inactive:hover{background:rgba(192,57,43,0.12);}
 td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .name-cell{display:flex;align-items:center;font-weight:500;}
-.col-n{width:20%}.col-f{width:11%}.col-d{width:10%}.col-p{width:10%}.col-a{width:9%}.col-r{width:11%}.col-w{width:7%}.col-no{width:13%}.col-ac{width:9%}
+.col-n{width:18%}.col-f{width:10%}.col-d{width:9%}.col-p{width:9%}.col-a{width:8%}.col-r{width:10%}.col-w{width:6%}.col-no{width:12%}.col-ac{width:8%}
 .mobile-list{display:none;padding:0.75rem 1rem 2rem;}
 .m-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;}
 .m-card.inactive{border-color:rgba(192,57,43,0.4);background:rgba(192,57,43,0.04);}
@@ -75,7 +75,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
 .wa-yes{color:var(--online-col);font-weight:600;}.wa-no{color:var(--inactive-col);font-weight:600;}
 .notas-cell{font-size:12px;color:var(--text-muted);font-style:italic;}
 .empty-msg{text-align:center;padding:3rem;color:var(--text-muted);font-family:"Cinzel",serif;font-size:13px;letter-spacing:2px;}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:2000;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px);}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:8px;padding:1.5rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 0 40px rgba(200,168,75,0.15);}
 .modal::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
@@ -211,7 +211,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(200,168,75,0.3);">
     <div style="font-family:Cinzel,serif;font-size:14px;color:var(--gold);letter-spacing:2px;">⚔ ALIADOS</div>
     <div id="aliados-count" style="font-size:11px;color:var(--text-muted);font-family:Cinzel,serif;"></div>
-    <button class="btn btn-gold" style="margin-left:auto;font-size:11px;padding:5px 12px" onclick="modoAliado=true;abrirModal()">+ Añadir aliado</button>
+    <button class="btn btn-gold" style="margin-left:auto;font-size:11px;padding:5px 12px" onclick="window.abrirComoAliado()">+ Añadir aliado</button>
   </div>
   <p style="font-size:12px;color:var(--text-muted);font-style:italic;margin-bottom:1rem;">Guerreros que partieron temporalmente para competir y hacerse más fuertes. Siguen siendo parte de Valhalla.</p>
   <div class="table-wrap" style="padding:0 0 1rem;">
@@ -504,7 +504,7 @@ function render(){
     const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓</span>":"<span class=\"wa-no\">✗</span>";
     return`<tr${rc}>
       <td><div class="name-cell">${dot(m.conexion)}<span style="overflow:hidden;text-overflow:ellipsis" title="${m.nombre}">${m.nombre}</span><span style="margin-left:4px;white-space:nowrap">${renderLogrosBadges(m,miembros)}</span></div></td>
-      <td>${fF(m.llegada)}</td><td>${fD(m.llegada)}</td><td>${fP(m.poder)}</td>
+      <td>${fF(m.llegada)}</td><td>${fD(m.llegada)}</td><td title="${fP(m.poder)}">${fP(m.poder)}</td>
       <td>${st(parseInt(m.actividad)||1)}</td><td>${rB(m.rango)}</td>
       <td style="text-align:center">${wa}</td>
       <td class="notas-cell" title="${m.notas||""}">${m.notas||""}</td>
@@ -538,6 +538,7 @@ function render(){
 }
 
 window.editarM = function(id){ modoAliado=false; abrirModal(id); };
+window.abrirComoAliado = function(){ modoAliado=true; abrirModal(); };
 window.editarA = function(id){ modoAliado=true; abrirModal(id,true); };
 window.expulsarM = function(id){ modoAliado=false; pedirExpulsion(id); };
 window.expulsarA = function(id){ modoAliado=true; pedirExpulsion(id); };
@@ -641,7 +642,7 @@ function renderAliados(){
     return`<tr style="border-bottom:1px solid rgba(200,168,75,0.06)">
       <td><div class="name-cell">${dot(m.conexion)}<span title="${m.nombre}">${m.nombre}</span></div></td>
       <td>${fF(m.llegada)}</td><td>${fD(m.llegada)}</td>
-      <td>${fP(m.poder)}</td>
+      <td title="${fP(m.poder)}">${fP(m.poder)}</td>
       <td>${st(parseInt(m.actividad)||1)}</td>
       <td style="text-align:center">${wa}</td>
       <td class="notas-cell" title="${m.notas||""}">${m.notas||""}</td>
