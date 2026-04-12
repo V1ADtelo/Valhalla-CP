@@ -184,7 +184,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
     <option value="actividad">Actividad</option>
     <option value="llegada">Entrada al clan</option>
   </select>
-  <button class="btn btn-gold" onclick="abrirModal()">+ Reclutar</button>
+  <button class="btn btn-gold" id="btn-reclutar" onclick="abrirModal()">+ Reclutar</button>
   <button class="btn" id="btn-mis-danos" style="display:none;border-color:rgba(167,139,250,0.4);color:#a78bfa;" onclick="abrirDamage()">⚔ Mis daños</button>
 </div>
 <div class="table-wrap app-section">
@@ -192,7 +192,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
     <thead><tr>
       <th class="col-n">Guerrero</th>
       <th class="col-f">Entrada</th>
-      <th class="col-d">Días en el Valhalla</th>
+      <th class="col-d" style="text-align:center">Días en el Valhalla</th>
       <th class="col-p">Poder</th>
       <th class="col-a">Act.</th>
       <th class="col-r">Rango</th>
@@ -211,7 +211,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(200,168,75,0.3);">
     <div style="font-family:Cinzel,serif;font-size:14px;color:var(--gold);letter-spacing:2px;">⚔ ALIADOS</div>
     <div id="aliados-count" style="font-size:11px;color:var(--text-muted);font-family:Cinzel,serif;"></div>
-    <button class="btn btn-gold" style="margin-left:auto;font-size:11px;padding:5px 12px" onclick="window.abrirComoAliado()">+ Añadir aliado</button>
+    <button class="btn btn-gold" style="margin-left:auto;font-size:11px;padding:5px 12px" id="btn-add-aliado" onclick="window.abrirComoAliado()">+ Añadir aliado</button>
   </div>
   <p style="font-size:12px;color:var(--text-muted);font-style:italic;margin-bottom:1rem;">Guerreros que partieron temporalmente para competir y hacerse más fuertes. Siguen siendo parte de Valhalla.</p>
   <div class="table-wrap" style="padding:0 0 1rem;">
@@ -219,7 +219,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
       <thead><tr>
         <th class="col-n">Guerrero</th>
         <th class="col-f">Entrada</th>
-        <th class="col-d">Días en el Valhalla</th>
+        <th class="col-d" style="text-align:center">Días en el Valhalla</th>
         
         <th class="col-p">Poder</th>
         <th class="col-a">Act.</th>
@@ -260,7 +260,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
 <div style="padding:0 1.5rem;margin-top:2rem;margin-bottom:3rem;">
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(200,168,75,0.3);">
     <div style="font-family:Cinzel,serif;font-size:14px;color:var(--gold);letter-spacing:2px;">📋 MURO DEL CLAN</div>
-    <button class="btn btn-gold" style="margin-left:auto;font-size:11px;padding:5px 12px" onclick="abrirMuro()">+ Nuevo anuncio</button>
+    <button class="btn btn-gold" style="margin-left:auto;font-size:11px;padding:5px 12px" id="btn-add-muro" onclick="abrirMuro()">+ Nuevo anuncio</button>
   </div>
   <div id="muro-mensajes"></div>
   <div id="muro-empty" style="text-align:center;padding:2rem;color:var(--text-muted);font-family:Cinzel,serif;font-size:12px;letter-spacing:2px;">— SIN ANUNCIOS AÚN —</div>
@@ -475,6 +475,7 @@ function updateStats(){
     <div class="stat"><span class="stat-val">${Math.round(pT)}M</span><span class="stat-label">Poder</span></div>`;
 }
 
+window.render = render;
 function filtrar(){
   const q=document.getElementById("search").value.toLowerCase();
   const fe=document.getElementById("f-estado").value,fr=document.getElementById("f-rango").value,ord=document.getElementById("f-orden").value;
@@ -504,7 +505,7 @@ function render(){
     const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓</span>":"<span class=\"wa-no\">✗</span>";
     return`<tr${rc}>
       <td><div class="name-cell">${dot(m.conexion)}<span style="overflow:hidden;text-overflow:ellipsis" title="${m.nombre}">${m.nombre}</span><span style="margin-left:4px;white-space:nowrap">${renderLogrosBadges(m,miembros)}</span></div></td>
-      <td>${fF(m.llegada)}</td><td>${fD(m.llegada)}</td><td title="${fP(m.poder)}">${fP(m.poder)}</td>
+      <td>${fF(m.llegada)}</td><td style="text-align:center">${fD(m.llegada)}</td><td title="${fP(m.poder)}">${fP(m.poder)}</td>
       <td>${st(parseInt(m.actividad)||1)}</td><td>${rB(m.rango)}</td>
       <td style="text-align:center">${wa}</td>
       <td class="notas-cell" title="${m.notas||""}">${m.notas||""}</td>
@@ -626,7 +627,7 @@ onSnapshot(collection(db, COL), async (snapshot) => {
     render();
     renderHoF();
     syncBar("✓ Sincronizado", "ok");
-    if(rolActual) aplicarPermisosTabla();
+    setTimeout(()=>{ if(rolActual) aplicarPermisosTabla(); }, 50);
   }
 }, (error) => {
   syncBar("✗ Sin conexión — modo local", "err");
@@ -641,7 +642,7 @@ function renderAliados(){
     const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓</span>":"<span class=\"wa-no\">✗</span>";
     return`<tr style="border-bottom:1px solid rgba(200,168,75,0.06)">
       <td><div class="name-cell">${dot(m.conexion)}<span title="${m.nombre}">${m.nombre}</span></div></td>
-      <td>${fF(m.llegada)}</td><td>${fD(m.llegada)}</td>
+      <td>${fF(m.llegada)}</td><td style="text-align:center">${fD(m.llegada)}</td>
       <td title="${fP(m.poder)}">${fP(m.poder)}</td>
       <td>${st(parseInt(m.actividad)||1)}</td>
       <td style="text-align:center">${wa}</td>
@@ -822,37 +823,49 @@ function mostrarApp(){
   document.body.classList.remove("app-hidden");
   const badge = document.getElementById("rol-badge");
   badge.style.display="block";
+
+  const btnReclutar = document.getElementById("btn-reclutar");
+  const btnMisDanos = document.getElementById("btn-mis-danos");
+  const btnAddAliado = document.getElementById("btn-add-aliado");
+  const btnAddMuro = document.getElementById("btn-add-muro");
+
   if(rolActual==="lider"){
     badge.textContent="👑 Líder · Cerrar sesión";
     badge.style.borderColor="rgba(200,168,75,0.5)";
     badge.style.color="var(--gold)";
-    document.getElementById("btn-mis-danos").style.display="none";
-    // Show edit buttons
-    document.querySelectorAll(".btn-editar,.btn-expulsar").forEach(el=>el.style.display="");
+    if(btnReclutar) btnReclutar.style.display="";
+    if(btnMisDanos) btnMisDanos.style.display="none";
+    if(btnAddAliado) btnAddAliado.style.display="";
+    if(btnAddMuro) btnAddMuro.style.display="";
   } else if(rolActual==="miembro"){
     badge.textContent="⚔ Miembro · Cerrar sesión";
     badge.style.borderColor="rgba(167,139,250,0.4)";
     badge.style.color="#a78bfa";
-    document.getElementById("btn-mis-danos").style.display="block";
-    // Hide edit/expulsar buttons, hide reclutar
-    document.querySelector(".btn-gold[onclick*=abrirModal]") && (document.querySelector(".btn-gold[onclick*=abrirModal]").style.display="none");
+    if(btnReclutar) btnReclutar.style.display="none";
+    if(btnMisDanos) btnMisDanos.style.display="block";
+    if(btnAddAliado) btnAddAliado.style.display="none";
+    if(btnAddMuro) btnAddMuro.style.display="none";
   } else {
     badge.textContent="👁 Visitante · Salir";
     badge.style.color="var(--text-secondary)";
-    document.getElementById("btn-mis-danos").style.display="none";
-    document.querySelector(".btn-gold[onclick*=abrirModal]") && (document.querySelector(".btn-gold[onclick*=abrirModal]").style.display="none");
+    if(btnReclutar) btnReclutar.style.display="none";
+    if(btnMisDanos) btnMisDanos.style.display="none";
+    if(btnAddAliado) btnAddAliado.style.display="none";
+    if(btnAddMuro) btnAddMuro.style.display="none";
   }
-  aplicarPermisosTabla();
+  setTimeout(()=>aplicarPermisosTabla(), 100);
 }
 
 function aplicarPermisosTabla(){
-  // Called after render to hide/show edit buttons based on role
   if(rolActual==="lider") return;
   document.querySelectorAll("#tbody button, #tbody-aliados button, #mobile-list button, #mobile-aliados button").forEach(btn=>{
-    if(btn.textContent.trim()==="Editar"||btn.textContent.trim()==="Expulsar"||btn.textContent.trim()==="Retirar"){
+    const t = btn.textContent.trim();
+    if(t==="Editar"||t==="Expulsar"||t==="Retirar"){
       btn.style.display="none";
     }
   });
+  // Also hide search/filter for no reason? No - members CAN search
+  // Just hide action buttons
 }
 
 window.intentarAcceso = function(tipo){
