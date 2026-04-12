@@ -55,7 +55,7 @@ tbody tr.flag-inactive{background:rgba(192,57,43,0.06);}
 tbody tr.flag-inactive:hover{background:rgba(192,57,43,0.12);}
 td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .name-cell{display:flex;align-items:center;font-weight:500;}
-.col-n{width:19%}.col-f{width:10%}.col-x{width:11%}.col-p{width:10%}.col-a{width:9%}.col-r{width:11%}.col-w{width:7%}.col-no{width:14%}.col-ac{width:9%}
+.col-n{width:17%}.col-f{width:9%}.col-d{width:6%}.col-x{width:10%}.col-p{width:9%}.col-a{width:8%}.col-r{width:10%}.col-w{width:6%}.col-no{width:12%}.col-ac{width:8%}
 .mobile-list{display:none;padding:0.75rem 1rem 2rem;}
 .m-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;}
 .m-card.inactive{border-color:rgba(192,57,43,0.4);background:rgba(192,57,43,0.04);}
@@ -157,6 +157,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
     <thead><tr>
       <th class="col-n">Guerrero</th>
       <th class="col-f">Entrada</th>
+      <th class="col-d">Forjado hace</th>
       <th class="col-x">XP Clan</th>
       <th class="col-p">Poder</th>
       <th class="col-a">Act.</th>
@@ -171,6 +172,87 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
 </div>
 <div class="mobile-list" id="mobile-list"></div>
 <div id="empty-mob" class="empty-msg" style="display:none;padding:2rem 1rem;">— SIN RESULTADOS —</div>
+
+<div style="padding:0 1.5rem;margin-top:1rem;">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(200,168,75,0.3);">
+    <div style="font-family:Cinzel,serif;font-size:14px;color:var(--gold);letter-spacing:2px;">⚔ ALIADOS EXTERNOS</div>
+    <div id="aliados-count" style="font-size:11px;color:var(--text-muted);font-family:Cinzel,serif;"></div>
+    <button class="btn btn-gold" style="margin-left:auto;font-size:11px;padding:5px 12px" onclick="modoAliado=true;abrirModal()">+ Añadir aliado</button>
+  </div>
+  <p style="font-size:12px;color:var(--text-muted);font-style:italic;margin-bottom:1rem;">Guerreros que partieron temporalmente para competir y hacerse más fuertes. Siguen siendo parte de Valhalla.</p>
+  <div class="table-wrap" style="padding:0 0 1rem;">
+    <table>
+      <thead><tr>
+        <th class="col-n">Guerrero</th>
+        <th class="col-f">Entrada</th>
+        <th class="col-d">Forjado hace</th>
+        <th class="col-x">XP Clan</th>
+        <th class="col-p">Poder</th>
+        <th class="col-a">Act.</th>
+        <th class="col-w">WA</th>
+        <th class="col-no">Notas</th>
+        <th class="col-ac">Acciones</th>
+      </tr></thead>
+      <tbody id="tbody-aliados"></tbody>
+    </table>
+    <div id="empty-aliados" class="empty-msg" style="display:none;padding:1.5rem;">— SIN ALIADOS REGISTRADOS —</div>
+  </div>
+  <div class="mobile-list" id="mobile-aliados"></div>
+</div>
+
+
+
+<!-- HALL OF FAME -->
+<div style="padding:0 1.5rem;margin-top:2rem;">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(200,168,75,0.3);">
+    <div style="font-family:Cinzel,serif;font-size:14px;color:var(--gold);letter-spacing:2px;">🏆 HALL OF FAME</div>
+  </div>
+
+  <!-- BOSS TABS -->
+  <div style="display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;">
+    <button class="btn btn-gold" id="tab-boss" onclick="setHofTab('boss')" style="font-size:11px;">💀 Clan Boss</button>
+    <button class="btn" id="tab-hydra" onclick="setHofTab('hydra')" style="font-size:11px;">🐉 Hydra</button>
+    <button class="btn" id="tab-quimera" onclick="setHofTab('quimera')" style="font-size:11px;">🔥 Quimera</button>
+  </div>
+
+  <!-- PODIO -->
+  <div id="hof-podio" style="display:flex;justify-content:center;align-items:flex-end;gap:12px;margin-bottom:2rem;flex-wrap:wrap;"></div>
+
+  <!-- RANKING COMPLETO -->
+  <div id="hof-ranking" style="overflow-x:auto;"></div>
+</div>
+
+<!-- MURO DEL CLAN -->
+<div style="padding:0 1.5rem;margin-top:2rem;margin-bottom:3rem;">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(200,168,75,0.3);">
+    <div style="font-family:Cinzel,serif;font-size:14px;color:var(--gold);letter-spacing:2px;">📋 MURO DEL CLAN</div>
+    <button class="btn btn-gold" style="margin-left:auto;font-size:11px;padding:5px 12px" onclick="abrirMuro()">+ Nuevo anuncio</button>
+  </div>
+  <div id="muro-mensajes"></div>
+  <div id="muro-empty" style="text-align:center;padding:2rem;color:var(--text-muted);font-family:Cinzel,serif;font-size:12px;letter-spacing:2px;">— SIN ANUNCIOS AÚN —</div>
+</div>
+
+<!-- MODAL MURO -->
+<div class="modal-overlay" id="muro-overlay">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title">📋 NUEVO ANUNCIO</div>
+    <div class="field"><label>Título</label><input id="muro-titulo" type="text" placeholder="Ej: CvC este fin de semana!" autocomplete="off"></div>
+    <div class="field"><label>Mensaje</label><textarea id="muro-texto" placeholder="Escribe el anuncio para el clan..." style="min-height:100px;"></textarea></div>
+    <div class="field"><label>Tipo</label>
+      <select id="muro-tipo">
+        <option value="aviso">⚠ Aviso</option>
+        <option value="cvc">⚔ CvC</option>
+        <option value="logro">🏆 Logro del clan</option>
+        <option value="norma">📜 Norma</option>
+        <option value="general">📢 General</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn" onclick="cerrarMuro()">Cancelar</button>
+      <button class="btn btn-gold" onclick="guardarMuro()">Publicar</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
@@ -201,6 +283,11 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
       <div class="field"><label>WhatsApp</label>
         <select id="m-whatsapp"><option value="si">Sí</option><option value="no">No</option></select>
       </div>
+    </div>
+    <div class="grid-3">
+      <div class="field"><label>💀 Clan Boss</label><input id="m-boss" type="number" placeholder="Ej: 5000000" min="0" inputmode="numeric"></div>
+      <div class="field"><label>🐉 Hydra</label><input id="m-hydra" type="number" placeholder="Ej: 3000000" min="0" inputmode="numeric"></div>
+      <div class="field"><label>🔥 Quimera</label><input id="m-quimera" type="number" placeholder="Ej: 2000000" min="0" inputmode="numeric"></div>
     </div>
     <div class="field"><label>Notas</label><textarea id="m-notas" placeholder="Observaciones sobre el miembro..."></textarea></div>
     <div class="modal-btns">
@@ -237,6 +324,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const COL = "miembros";
+const ACOL = "aliados";
 
 function syncBar(msg, tipo){
   const el = document.getElementById("sync-bar");
@@ -282,11 +370,38 @@ const defaultData = [
 ];
 
 let miembros = [];
+
+const defaultAliados = [
+  {id:"a1",nombre:"Ejemplo Aliado",llegada:"2024-06-01",conexion:"online",xp:0,poder:0,actividad:1,rango:"Aliado",whatsapp:"si",notas:"Fuera temporalmente para crecer"}
+];
+let aliados = [];
+
 let editandoId = null, expulsandoId = null;
+let modoAliado = false;
+
+
+function getLogros(m, miembros){
+  const logros = [];
+  const dias = m.llegada ? Math.floor((new Date()-new Date(m.llegada))/(1000*60*60*24)) : 0;
+  const topXP = [...miembros].sort((a,b)=>(b.xp||0)-(a.xp||0))[0];
+  const topPoder = [...miembros].sort((a,b)=>(b.poder||0)-(a.poder||0))[0];
+  if(topXP && m.id === topXP.id) logros.push({icon:"🔥", title:"Columna del Clan", desc:"Mayor XP del clan"});
+  if(topPoder && m.id === topPoder.id) logros.push({icon:"🐲", title:"Leyenda", desc:"Mayor poder del clan"});
+  if(dias >= 365) logros.push({icon:"🛡", title:"Leal", desc:"Más de 1 año en el clan"});
+  else if(dias >= 180) logros.push({icon:"👑", title:"Veterano", desc:"Más de 6 meses en el clan"});
+  return logros;
+}
+
+function renderLogrosBadges(m, miembros){
+  const logros = getLogros(m, miembros);
+  if(!logros.length) return "";
+  return logros.map(l=>`<span title="${l.title}: ${l.desc}" style="font-size:14px;cursor:default;">${l.icon}</span>`).join("");
+}
 
 function dot(c){const cls={online:"dot-online",reciente:"dot-reciente",inactivo:"dot-inactivo"};return`<span class="dot ${cls[c]||"dot-unknown"}"></span>`;}
 function rB(r){const cls={"Líder":"b-lider","Veterano":"b-veterano","Miembro":"b-miembro"};return`<span class="badge ${cls[r]||"b-miembro"}">${r}</span>`;}
 function st(n){let s="";for(let i=1;i<=3;i++)s+=i<=n?"<span class='stars'>★</span>":"<span class='star-empty'>☆</span>";return s;}
+function fD(d){if(!d)return"—";const hoy=new Date();const ent=new Date(d);if(isNaN(ent))return"—";const diff=Math.floor((hoy-ent)/(1000*60*60*24));return diff>=0?diff+"d":"—";}
 function fF(d){if(!d)return"—";const p=d.split("-");return p.length<3?"—":p[2]+"/"+p[1]+"/"+p[0].slice(2);}
 function fX(x){return x?Number(x).toLocaleString("es-ES"):"—";}
 function fP(p){return p?parseFloat(p).toFixed(2)+"M":"—";}
@@ -333,8 +448,8 @@ function render(){
     const rc=m.conexion==="inactivo"?" class=\"flag-inactive\"":" ";
     const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓</span>":"<span class=\"wa-no\">✗</span>";
     return`<tr${rc}>
-      <td><div class="name-cell">${dot(m.conexion)}<span style="overflow:hidden;text-overflow:ellipsis" title="${m.nombre}">${m.nombre}</span></div></td>
-      <td>${fF(m.llegada)}</td><td>${fX(m.xp)}</td><td>${fP(m.poder)}</td>
+      <td><div class="name-cell">${dot(m.conexion)}<span style="overflow:hidden;text-overflow:ellipsis" title="${m.nombre}">${m.nombre}</span><span style="margin-left:4px;white-space:nowrap">${renderLogrosBadges(m,miembros)}</span></div></td>
+      <td>${fF(m.llegada)}</td><td>${fD(m.llegada)}</td><td>${fX(m.xp)}</td><td>${fP(m.poder)}</td>
       <td>${st(parseInt(m.actividad)||1)}</td><td>${rB(m.rango)}</td>
       <td style="text-align:center">${wa}</td>
       <td class="notas-cell" title="${m.notas||""}">${m.notas||""}</td>
@@ -348,11 +463,12 @@ function render(){
     const ic=m.conexion==="inactivo"?" inactive":"";
     const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓ WA</span>":"<span class=\"wa-no\">✗ WA</span>";
     return`<div class="m-card${ic}">
-      <div class="m-card-header"><span class="m-name">${dot(m.conexion)}${m.nombre}</span>
+      <div class="m-card-header"><span class="m-name">${dot(m.conexion)}${m.nombre} <span style="font-size:13px">${renderLogrosBadges(m,miembros)}</span></span>
       <div style="display:flex;gap:6px;align-items:center">${rB(m.rango)} ${wa}</div></div>
       <div class="m-card-body">
         <div class="m-field"><span class="m-field-label">Estado</span><span class="m-field-val">${estadoLabel(m.conexion)}</span></div>
         <div class="m-field"><span class="m-field-label">Entrada</span><span class="m-field-val">${fF(m.llegada)}</span></div>
+        <div class="m-field"><span class="m-field-label">Días</span><span class="m-field-val">${fD(m.llegada)}</span></div>
         <div class="m-field"><span class="m-field-label">XP Clan</span><span class="m-field-val">${fX(m.xp)}</span></div>
         <div class="m-field"><span class="m-field-label">Poder</span><span class="m-field-val">${fP(m.poder)}</span></div>
         <div class="m-field"><span class="m-field-label">Actividad</span><span class="m-field-val">${st(parseInt(m.actividad)||1)}</span></div>
@@ -366,13 +482,15 @@ function render(){
   }).join("");
 }
 
-window.editarM = function(id){ abrirModal(id); };
-window.expulsarM = function(id){ pedirExpulsion(id); };
+window.editarM = function(id){ modoAliado=false; abrirModal(id); };
+window.editarA = function(id){ modoAliado=true; abrirModal(id,true); };
+window.expulsarM = function(id){ modoAliado=false; pedirExpulsion(id); };
+window.expulsarA = function(id){ modoAliado=true; pedirExpulsion(id); };
 
 function abrirModal(id=null){
   editandoId=id;
   const m=id?miembros.find(x=>x.id===id):null;
-  document.getElementById("modal-title").textContent=id?"EDITAR GUERRERO":"RECLUTAR GUERRERO";
+  document.getElementById("modal-title").textContent=id?(modoAliado?"EDITAR ALIADO":"EDITAR GUERRERO"):(modoAliado?"AÑADIR ALIADO":"RECLUTAR GUERRERO");
   document.getElementById("m-nombre").value=m?m.nombre:"";
   document.getElementById("m-llegada").value=m?m.llegada:"";
   document.getElementById("m-conexion").value=m?(m.conexion||"online"):"online";
@@ -382,6 +500,9 @@ function abrirModal(id=null){
   document.getElementById("m-rango").value=m?(m.rango||"Miembro"):"Miembro";
   document.getElementById("m-whatsapp").value=m?(m.whatsapp||"si"):"si";
   document.getElementById("m-notas").value=m?m.notas:"";
+  document.getElementById("m-boss").value=m?m.boss||"":"";
+  document.getElementById("m-hydra").value=m?m.hydra||"":"";
+  document.getElementById("m-quimera").value=m?m.quimera||"":"";
   document.getElementById("modal-overlay").classList.add("open");
   setTimeout(()=>document.getElementById("m-nombre").focus(),150);
 }
@@ -393,13 +514,15 @@ window.cerrarModal = cerrarModal;
 async function guardar(){
   const nombre=document.getElementById("m-nombre").value.trim();
   if(!nombre){alert("El nombre es obligatorio.");return;}
-  const id = editandoId || Date.now().toString();
-  const datos={id,nombre,llegada:document.getElementById("m-llegada").value,conexion:document.getElementById("m-conexion").value,xp:parseInt(document.getElementById("m-xp").value)||0,poder:parseFloat(document.getElementById("m-poder").value)||0,actividad:parseInt(document.getElementById("m-actividad").value)||1,rango:document.getElementById("m-rango").value,whatsapp:document.getElementById("m-whatsapp").value,notas:document.getElementById("m-notas").value.trim()};
+  const coleccion = modoAliado ? ACOL : COL;
+const id = editandoId || (modoAliado?"a":"") + Date.now().toString();
+  const datos={id,nombre,llegada:document.getElementById("m-llegada").value,conexion:document.getElementById("m-conexion").value,xp:parseInt(document.getElementById("m-xp").value)||0,poder:parseFloat(document.getElementById("m-poder").value)||0,actividad:parseInt(document.getElementById("m-actividad").value)||1,rango:document.getElementById("m-rango").value,whatsapp:document.getElementById("m-whatsapp").value,notas:document.getElementById("m-notas").value.trim(),boss:parseInt(document.getElementById("m-boss").value)||0,hydra:parseInt(document.getElementById("m-hydra").value)||0,quimera:parseInt(document.getElementById("m-quimera").value)||0};
   if(!editandoId && miembros.length>=30){alert("El clan está lleno (30/30).");return;}
   try{
     syncBar("⚔ Guardando...", "loading");
-    await setDoc(doc(db, COL, id), datos);
+    await setDoc(doc(db, coleccion, id), datos);
     syncBar("✓ Guardado en la nube", "ok");
+    modoAliado=false;
     cerrarModal();
   } catch(e){ syncBar("✗ Error al guardar: "+e.message, "err"); }
 }
@@ -418,7 +541,7 @@ async function confirmarExpulsion(){
   if(expulsandoId!==null){
     try{
       syncBar("⚔ Expulsando...", "loading");
-      await deleteDoc(doc(db, COL, expulsandoId));
+      await deleteDoc(doc(db, modoAliado?ACOL:COL, expulsandoId));
       syncBar("✓ Guerrero expulsado", "ok");
       cerrarConfirm();
     } catch(e){ syncBar("✗ Error: "+e.message, "err"); }
@@ -445,13 +568,191 @@ onSnapshot(collection(db, COL), async (snapshot) => {
   } else {
     miembros = snapshot.docs.map(d => d.data());
     render();
+    renderHoF();
     syncBar("✓ Sincronizado", "ok");
   }
 }, (error) => {
   syncBar("✗ Sin conexión — modo local", "err");
 });
 
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){cerrarModal();cerrarConfirm();}});
+
+function renderAliados(){
+  const empty = aliados.length === 0;
+  document.getElementById("empty-aliados").style.display = empty?"block":"none";
+  document.getElementById("aliados-count").textContent = aliados.length + " guerreros";
+  document.getElementById("tbody-aliados").innerHTML = empty?"":aliados.map(m=>{
+    const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓</span>":"<span class=\"wa-no\">✗</span>";
+    return`<tr style="border-bottom:1px solid rgba(200,168,75,0.06)">
+      <td><div class="name-cell">${dot(m.conexion)}<span title="${m.nombre}">${m.nombre}</span></div></td>
+      <td>${fF(m.llegada)}</td><td>${fD(m.llegada)}</td>
+      <td>${fX(m.xp)}</td><td>${fP(m.poder)}</td>
+      <td>${st(parseInt(m.actividad)||1)}</td>
+      <td style="text-align:center">${wa}</td>
+      <td class="notas-cell" title="${m.notas||""}">${m.notas||""}</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn btn-sm" onclick="window.editarA('${m.id}')">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="window.expulsarA('${m.id}')">Retirar</button>
+      </div></td>
+    </tr>`;
+  }).join("");
+  document.getElementById("mobile-aliados").innerHTML = empty?"":aliados.map(m=>{
+    const ic=m.conexion==="inactivo"?" inactive":"";
+    const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓ WA</span>":"<span class=\"wa-no\">✗ WA</span>";
+    return`<div class="m-card${ic}" style="border-color:rgba(200,168,75,0.3)">
+      <div class="m-card-header"><span class="m-name">${dot(m.conexion)}${m.nombre}</span>
+      <div style="display:flex;gap:6px;align-items:center"><span class="badge b-veterano">Aliado</span> ${wa}</div></div>
+      <div class="m-card-body">
+        <div class="m-field"><span class="m-field-label">Forjado hace</span><span class="m-field-val">${fD(m.llegada)}</span></div>
+        <div class="m-field"><span class="m-field-label">Poder</span><span class="m-field-val">${fP(m.poder)}</span></div>
+        <div class="m-field"><span class="m-field-label">XP Clan</span><span class="m-field-val">${fX(m.xp)}</span></div>
+        <div class="m-field"><span class="m-field-label">Actividad</span><span class="m-field-val">${st(parseInt(m.actividad)||1)}</span></div>
+        ${m.notas?`<div class="m-field m-notas"><span class="m-field-label">Notas</span><span>${m.notas}</span></div>`:""}
+      </div>
+      <div class="m-card-footer">
+        <button class="btn btn-sm" onclick="window.editarA('${m.id}')">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="window.expulsarA('${m.id}')">Retirar</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+
+// Escuchar aliados en tiempo real
+onSnapshot(collection(db, ACOL), async (snapshot) => {
+  if(snapshot.empty){
+    aliados = [];
+  } else {
+    aliados = snapshot.docs.map(d => d.data());
+  }
+  renderAliados();
+}, (error) => { console.log("Aliados error:", error); });
+
+
+// ============ HALL OF FAME ============
+let hofTab = "boss";
+window.setHofTab = function(tab){
+  hofTab = tab;
+  ["boss","hydra","quimera"].forEach(t=>{
+    const btn = document.getElementById("tab-"+t);
+    if(btn){ btn.className = t===tab?"btn btn-gold":"btn"; }
+  });
+  renderHoF();
+};
+
+function fDmg(n){ if(!n||n===0)return"—"; if(n>=1000000)return(n/1000000).toFixed(2)+"M"; if(n>=1000)return(n/1000).toFixed(0)+"K"; return n.toString(); }
+
+function renderHoF(){
+  const campo = hofTab;
+  const sorted = [...miembros].filter(m=>(m[campo]||0)>0).sort((a,b)=>(b[campo]||0)-(a[campo]||0));
+  const medals = ["🥇","🥈","🥉"];
+  const colors = ["#C8A84B","#b0b8c8","#cd7f32"];
+  const heights = ["120px","90px","70px"];
+  const order = [1,0,2]; // silver, gold, bronze visual order
+
+  const podioEl = document.getElementById("hof-podio");
+  if(sorted.length === 0){
+    podioEl.innerHTML = "<p style=\"color:var(--text-muted);font-family:Cinzel,serif;font-size:12px;letter-spacing:2px;text-align:center;width:100%\">— SIN DATOS AÚN —</p>";
+    document.getElementById("hof-ranking").innerHTML="";
+    return;
+  }
+
+  const top3 = order.map(i=>sorted[i]).filter(Boolean);
+  podioEl.innerHTML = top3.map((m,vi)=>{
+    const realIdx = order[vi];
+    const col = colors[realIdx];
+    const h = heights[realIdx];
+    const med = medals[realIdx];
+    return`<div style="text-align:center;flex:1;min-width:100px;max-width:160px;">
+      <div style="font-size:11px;font-family:Cinzel,serif;color:${col};margin-bottom:4px;letter-spacing:1px;">${med}</div>
+      <div style="font-size:13px;font-family:Cinzel,serif;color:var(--text-primary);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${m.nombre}">${m.nombre}</div>
+      <div style="font-size:11px;color:${col};font-family:Cinzel,serif;margin-bottom:8px;">${fDmg(m[campo])}</div>
+      <div style="background:${col}22;border:1px solid ${col}55;border-radius:4px 4px 0 0;height:${h};display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;">
+        <span style="font-size:28px;">${med}</span>
+      </div>
+    </div>`;
+  }).join("");
+
+  // Full ranking table
+  const rankHtml = `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+    <thead><tr>
+      <th style="font-family:Cinzel,serif;font-size:10px;color:var(--gold-dim);letter-spacing:2px;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;background:var(--bg-mid);">#</th>
+      <th style="font-family:Cinzel,serif;font-size:10px;color:var(--gold-dim);letter-spacing:2px;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;background:var(--bg-mid);">Guerrero</th>
+      <th style="font-family:Cinzel,serif;font-size:10px;color:var(--gold-dim);letter-spacing:2px;padding:8px 10px;border-bottom:1px solid var(--border);text-align:right;background:var(--bg-mid);">Daño</th>
+    </tr></thead>
+    <tbody>${sorted.map((m,i)=>`<tr style="border-bottom:1px solid rgba(200,168,75,0.06)">
+      <td style="padding:8px 10px;color:${i<3?colors[i]:'var(--text-muted)'};font-family:Cinzel,serif;font-weight:600;">${i<3?medals[i]:i+1}</td>
+      <td style="padding:8px 10px;font-weight:500;">${m.nombre}</td>
+      <td style="padding:8px 10px;text-align:right;color:var(--gold);">${fDmg(m[campo])}</td>
+    </tr>`).join("")}</tbody>
+  </table>`;
+  document.getElementById("hof-ranking").innerHTML = rankHtml;
+}
+
+// ============ MURO DEL CLAN ============
+const MCOL = "muro";
+let mensajes = [];
+
+window.abrirMuro = function(){
+  document.getElementById("muro-titulo").value="";
+  document.getElementById("muro-texto").value="";
+  document.getElementById("muro-tipo").value="general";
+  document.getElementById("muro-overlay").classList.add("open");
+  setTimeout(()=>document.getElementById("muro-titulo").focus(),150);
+};
+window.cerrarMuro = function(){ document.getElementById("muro-overlay").classList.remove("open"); };
+
+window.guardarMuro = async function(){
+  const titulo = document.getElementById("muro-titulo").value.trim();
+  const texto = document.getElementById("muro-texto").value.trim();
+  if(!titulo||!texto){ alert("El título y el mensaje son obligatorios."); return; }
+  const id = Date.now().toString();
+  const datos = { id, titulo, texto, tipo: document.getElementById("muro-tipo").value, fecha: new Date().toISOString() };
+  try{
+    syncBar("⚔ Publicando anuncio...", "loading");
+    await setDoc(doc(db, MCOL, id), datos);
+    syncBar("✓ Anuncio publicado", "ok");
+    cerrarMuro();
+  } catch(e){ syncBar("✗ Error: "+e.message, "err"); }
+};
+
+window.borrarMensaje = async function(id){
+  if(!confirm("¿Eliminar este anuncio?")) return;
+  try{ await deleteDoc(doc(db, MCOL, id)); } catch(e){ syncBar("✗ Error: "+e.message,"err"); }
+};
+
+function renderMuro(){
+  const el = document.getElementById("muro-mensajes");
+  const empty = document.getElementById("muro-empty");
+  if(mensajes.length===0){ el.innerHTML=""; empty.style.display="block"; return; }
+  empty.style.display="none";
+  const tipoColors = {aviso:"#f39c12",cvc:"#e74c3c",logro:"#C8A84B",norma:"#a78bfa",general:"#27c98f"};
+  const tipoLabels = {aviso:"⚠ Aviso",cvc:"⚔ CvC",logro:"🏆 Logro",norma:"📜 Norma",general:"📢 General"};
+  const sorted = [...mensajes].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  el.innerHTML = sorted.map(m=>{
+    const col = tipoColors[m.tipo]||"var(--gold)";
+    const lbl = tipoLabels[m.tipo]||"📢 General";
+    const fecha = new Date(m.fecha).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"});
+    return`<div style="background:var(--bg-card);border:1px solid ${col}44;border-left:3px solid ${col};border-radius:6px;padding:14px 16px;margin-bottom:10px;position:relative;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
+        <span style="font-size:10px;font-family:Cinzel,serif;color:${col};letter-spacing:1px;">${lbl}</span>
+        <span style="font-size:10px;color:var(--text-muted);margin-left:auto;">${fecha}</span>
+        <button onclick="window.borrarMensaje('${m.id}')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;padding:0 4px;" title="Eliminar">✕</button>
+      </div>
+      <div style="font-family:Cinzel,serif;font-size:13px;color:var(--text-primary);margin-bottom:6px;letter-spacing:1px;">${m.titulo}</div>
+      <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">${m.texto}</div>
+    </div>`;
+  }).join("");
+}
+
+// Escuchar muro en tiempo real
+onSnapshot(collection(db, MCOL), (snapshot) => {
+  mensajes = snapshot.docs.map(d=>d.data());
+  renderMuro();
+}, (error) => { console.log("Muro error:", error); });
+
+document.getElementById("muro-overlay").addEventListener("click",e=>{if(e.target.id==="muro-overlay")cerrarMuro();});
+
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){cerrarModal();cerrarConfirm();cerrarMuro();}});
 document.getElementById("modal-overlay").addEventListener("click",e=>{if(e.target.id==="modal-overlay")cerrarModal();});
 document.getElementById("confirm-overlay").addEventListener("click",e=>{if(e.target.id==="confirm-overlay")cerrarConfirm();});
 </script>
