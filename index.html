@@ -17,7 +17,7 @@ body{background:var(--bg-deep);color:var(--text-primary);font-family:"Crimson Pr
 .clan-tag{font-family:"Cinzel",serif;font-size:10px;color:var(--text-secondary);letter-spacing:1.5px;margin-top:4px;}
 .btn-export{padding:7px 14px;border-radius:4px;border:1px solid var(--gold-dim);background:rgba(200,168,75,0.1);color:var(--gold);font-family:"Cinzel",serif;font-size:11px;letter-spacing:1px;cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;}
 .btn-export:hover{background:rgba(200,168,75,0.2);}
-.stats-bar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);}
+.stats-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);}
 .stat{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:10px 8px;text-align:center;position:relative;overflow:hidden;}
 .stat::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);}
 .stat-val{font-family:"Cinzel",serif;font-size:clamp(15px,3vw,20px);font-weight:600;color:var(--gold);display:block;}
@@ -55,7 +55,7 @@ tbody tr.flag-inactive{background:rgba(192,57,43,0.06);}
 tbody tr.flag-inactive:hover{background:rgba(192,57,43,0.12);}
 td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .name-cell{display:flex;align-items:center;font-weight:500;}
-.col-n{width:17%}.col-f{width:9%}.col-d{width:6%}.col-x{width:10%}.col-p{width:9%}.col-a{width:8%}.col-r{width:10%}.col-w{width:6%}.col-no{width:12%}.col-ac{width:8%}
+.col-n{width:20%}.col-f{width:11%}.col-d{width:10%}.col-p{width:10%}.col-a{width:9%}.col-r{width:11%}.col-w{width:7%}.col-no{width:13%}.col-ac{width:9%}
 .mobile-list{display:none;padding:0.75rem 1rem 2rem;}
 .m-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;}
 .m-card.inactive{border-color:rgba(192,57,43,0.4);background:rgba(192,57,43,0.04);}
@@ -94,7 +94,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
 .name-hl{color:var(--gold);font-weight:500;}
 @media(max-width:700px){
   .stats-bar{grid-template-columns:repeat(3,1fr);}
-  .stat:nth-child(4),.stat:nth-child(5){display:none;}
+  .stat:nth-child(4){display:none;}
   .table-wrap{display:none;}
   .mobile-list{display:block;}
   .clan-tag{display:none;}
@@ -192,8 +192,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
     <thead><tr>
       <th class="col-n">Guerrero</th>
       <th class="col-f">Entrada</th>
-      <th class="col-d">Forjado hace</th>
-      <th class="col-x">XP Clan</th>
+      <th class="col-d">Días en el Valhalla</th>
       <th class="col-p">Poder</th>
       <th class="col-a">Act.</th>
       <th class="col-r">Rango</th>
@@ -220,8 +219,8 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
       <thead><tr>
         <th class="col-n">Guerrero</th>
         <th class="col-f">Entrada</th>
-        <th class="col-d">Forjado hace</th>
-        <th class="col-x">XP Clan</th>
+        <th class="col-d">Días en el Valhalla</th>
+        
         <th class="col-p">Poder</th>
         <th class="col-a">Act.</th>
         <th class="col-w">WA</th>
@@ -326,10 +325,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
         </select>
       </div>
     </div>
-    <div class="grid-2">
-      <div class="field"><label>XP de Clan</label><input id="m-xp" type="number" placeholder="Ej: 38962" min="0" inputmode="numeric"></div>
-      <div class="field"><label>Poder (M)</label><input id="m-poder" type="number" placeholder="Ej: 28.11" step="0.01" min="0" inputmode="decimal"></div>
-    </div>
+    <div class="field"><label>Poder (M)</label><input id="m-poder" type="number" placeholder="Ej: 28.11" step="0.01" min="0" inputmode="decimal"></div>
     <div class="grid-3">
       <div class="field"><label>Actividad</label>
         <select id="m-actividad"><option value="1">★☆☆</option><option value="2" selected>★★☆</option><option value="3">★★★</option></select>
@@ -440,12 +436,10 @@ let modoAliado = false;
 function getLogros(m, miembros){
   const logros = [];
   const dias = m.llegada ? Math.floor((new Date()-new Date(m.llegada))/(1000*60*60*24)) : 0;
-  const topXP = [...miembros].filter(x=>(x.xp||0)>0).sort((a,b)=>(b.xp||0)-(a.xp||0))[0];
   const topPoder = [...miembros].filter(x=>(x.poder||0)>0).sort((a,b)=>(b.poder||0)-(a.poder||0))[0];
   const topBoss = [...miembros].filter(x=>(x.boss||0)>0).sort((a,b)=>(b.boss||0)-(a.boss||0))[0];
   const topHydra = [...miembros].filter(x=>(x.hydra||0)>0).sort((a,b)=>(b.hydra||0)-(a.hydra||0))[0];
   const topQuimera = [...miembros].filter(x=>(x.quimera||0)>0).sort((a,b)=>(b.quimera||0)-(a.quimera||0))[0];
-  if(topXP && m.id === topXP.id) logros.push({icon:"🔥", title:"Columna del Clan", desc:"Mayor XP del clan"});
   if(topPoder && m.id === topPoder.id) logros.push({icon:"🐲", title:"Leyenda", desc:"Mayor poder del clan"});
   if(topBoss && m.id === topBoss.id) logros.push({icon:"👹", title:"Azote del Boss", desc:"Mayor daño en Clan Boss"});
   if(topHydra && m.id === topHydra.id) logros.push({icon:"🐉", title:"Cazador de Hydra", desc:"Mayor daño en Hydra"});
@@ -473,13 +467,11 @@ function estadoLabel(c){return{online:"Activo",reciente:"Activo",inactivo:"Inact
 function updateStats(){
   const t=miembros.length,on=miembros.filter(m=>m.conexion==="online").length;
   const inac=miembros.filter(m=>m.conexion==="inactivo").length;
-  const xT=miembros.reduce((a,m)=>a+(parseInt(m.xp)||0),0);
   const pT=miembros.reduce((a,m)=>a+(parseFloat(m.poder)||0),0);
   document.getElementById("stats-bar").innerHTML=`
     <div class="stat"><span class="stat-val">${t}/30</span><span class="stat-label">Miembros</span></div>
     <div class="stat"><span class="stat-val success">${on}</span><span class="stat-label">En línea</span></div>
     <div class="stat"><span class="stat-val${inac>0?" danger":""}">${inac}</span><span class="stat-label">Inactivos</span></div>
-    <div class="stat"><span class="stat-val">${xT.toLocaleString("es-ES")}</span><span class="stat-label">XP Total</span></div>
     <div class="stat"><span class="stat-val">${Math.round(pT)}M</span><span class="stat-label">Poder</span></div>`;
 }
 
@@ -512,7 +504,7 @@ function render(){
     const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓</span>":"<span class=\"wa-no\">✗</span>";
     return`<tr${rc}>
       <td><div class="name-cell">${dot(m.conexion)}<span style="overflow:hidden;text-overflow:ellipsis" title="${m.nombre}">${m.nombre}</span><span style="margin-left:4px;white-space:nowrap">${renderLogrosBadges(m,miembros)}</span></div></td>
-      <td>${fF(m.llegada)}</td><td>${fD(m.llegada)}</td><td>${fX(m.xp)}</td><td>${fP(m.poder)}</td>
+      <td>${fF(m.llegada)}</td><td>${fD(m.llegada)}</td><td>${fP(m.poder)}</td>
       <td>${st(parseInt(m.actividad)||1)}</td><td>${rB(m.rango)}</td>
       <td style="text-align:center">${wa}</td>
       <td class="notas-cell" title="${m.notas||""}">${m.notas||""}</td>
@@ -532,7 +524,7 @@ function render(){
         <div class="m-field"><span class="m-field-label">Estado</span><span class="m-field-val">${estadoLabel(m.conexion)}</span></div>
         <div class="m-field"><span class="m-field-label">Entrada</span><span class="m-field-val">${fF(m.llegada)}</span></div>
         <div class="m-field"><span class="m-field-label">Días</span><span class="m-field-val">${fD(m.llegada)}</span></div>
-        <div class="m-field"><span class="m-field-label">XP Clan</span><span class="m-field-val">${fX(m.xp)}</span></div>
+        
         <div class="m-field"><span class="m-field-label">Poder</span><span class="m-field-val">${fP(m.poder)}</span></div>
         <div class="m-field"><span class="m-field-label">Actividad</span><span class="m-field-val">${st(parseInt(m.actividad)||1)}</span></div>
         ${m.notas?`<div class="m-field m-notas"><span class="m-field-label">Notas</span><span>${m.notas}</span></div>`:""}
@@ -649,7 +641,7 @@ function renderAliados(){
     return`<tr style="border-bottom:1px solid rgba(200,168,75,0.06)">
       <td><div class="name-cell">${dot(m.conexion)}<span title="${m.nombre}">${m.nombre}</span></div></td>
       <td>${fF(m.llegada)}</td><td>${fD(m.llegada)}</td>
-      <td>${fX(m.xp)}</td><td>${fP(m.poder)}</td>
+      <td>${fP(m.poder)}</td>
       <td>${st(parseInt(m.actividad)||1)}</td>
       <td style="text-align:center">${wa}</td>
       <td class="notas-cell" title="${m.notas||""}">${m.notas||""}</td>
@@ -666,9 +658,9 @@ function renderAliados(){
       <div class="m-card-header"><span class="m-name">${dot(m.conexion)}${m.nombre}</span>
       <div style="display:flex;gap:6px;align-items:center"><span class="badge b-veterano">Aliado</span> ${wa}</div></div>
       <div class="m-card-body">
-        <div class="m-field"><span class="m-field-label">Forjado hace</span><span class="m-field-val">${fD(m.llegada)}</span></div>
+        <div class="m-field"><span class="m-field-label">Días en el Valhalla</span><span class="m-field-val">${fD(m.llegada)}</span></div>
         <div class="m-field"><span class="m-field-label">Poder</span><span class="m-field-val">${fP(m.poder)}</span></div>
-        <div class="m-field"><span class="m-field-label">XP Clan</span><span class="m-field-val">${fX(m.xp)}</span></div>
+        
         <div class="m-field"><span class="m-field-label">Actividad</span><span class="m-field-val">${st(parseInt(m.actividad)||1)}</span></div>
         ${m.notas?`<div class="m-field m-notas"><span class="m-field-label">Notas</span><span>${m.notas}</span></div>`:""}
       </div>
