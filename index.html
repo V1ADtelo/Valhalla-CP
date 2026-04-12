@@ -855,12 +855,16 @@ function aplicarPermisosTabla(){
 }
 
 window.intentarAcceso = function(tipo){
-  tipoAcceso = tipo;
-  document.getElementById("pass-title").textContent = tipo==="lider"?"👑 CONTRASEÑA LÍDER":"⚔ CONTRASEÑA MIEMBRO";
-  document.getElementById("pass-input").value="";
-  document.getElementById("pass-error").style.display="none";
-  document.getElementById("pass-overlay").classList.add("open");
-  setTimeout(()=>document.getElementById("pass-input").focus(),150);
+  const label = tipo==="lider"?"👑 Contraseña Líder":"⚔ Contraseña Miembro";
+  const val = prompt(label);
+  if(val === null) return;
+  const correcto = tipo==="lider" ? val===PASS_LIDER : val===PASS_MIEMBRO;
+  if(correcto){
+    rolActual = tipo;
+    mostrarApp();
+  } else {
+    alert("⚠ Contraseña incorrecta");
+  }
 };
 
 window.cerrarPass = function(){
@@ -896,8 +900,8 @@ window.cerrarSesion = function(){
 };
 
 // Enter key on password input
-document.getElementById("pass-input").addEventListener("keydown",e=>{if(e.key==="Enter")window.verificarPass();});
-document.getElementById("pass-overlay").addEventListener("click",e=>{if(e.target.id==="pass-overlay")cerrarPass();});
+
+
 
 // ============ DAÑOS MIEMBRO ============
 window.abrirDamage = function(){
