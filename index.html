@@ -8,43 +8,47 @@
 <style>
 :root{--bg-deep:#0a0c0f;--bg-mid:#111418;--bg-card:#161b22;--bg-hover:#1e2535;--gold:#C8A84B;--gold-dim:#8a7030;--border:rgba(200,168,75,0.18);--border-bright:rgba(200,168,75,0.5);--text-primary:#e8e0d0;--text-secondary:#9a9080;--text-muted:#5a5248;--online-col:#27c98f;--recent-col:#f39c12;--inactive-col:#e74c3c;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg-deep);color:var(--text-primary);font-family:'Crimson Pro',Georgia,serif;font-size:15px;background-image:radial-gradient(ellipse at 20% 0%,rgba(122,18,18,0.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(200,168,75,0.06) 0%,transparent 50%);}
+body{background:var(--bg-deep);color:var(--text-primary);font-family:"Crimson Pro",Georgia,serif;font-size:15px;background-image:radial-gradient(ellipse at 20% 0%,rgba(122,18,18,0.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(200,168,75,0.06) 0%,transparent 50%);}
 .header{background:linear-gradient(180deg,rgba(122,18,18,0.2) 0%,transparent 100%);border-bottom:1px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;position:relative;}
-.header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);}
+.header::after{content:"";position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);}
 .clan-logo{flex-shrink:0;width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(200,168,75,0.4));}
 .header-info{flex:1;min-width:0;}
-.clan-name{font-family:'Cinzel',serif;font-size:clamp(18px,4vw,26px);font-weight:700;color:var(--gold);letter-spacing:3px;text-shadow:0 0 20px rgba(200,168,75,0.4);line-height:1;}
-.clan-tag{font-family:'Cinzel',serif;font-size:10px;color:var(--text-secondary);letter-spacing:1.5px;margin-top:4px;}
-.btn-export{padding:7px 14px;border-radius:4px;border:1px solid var(--gold-dim);background:rgba(200,168,75,0.1);color:var(--gold);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;}
+.clan-name{font-family:"Cinzel",serif;font-size:clamp(18px,4vw,26px);font-weight:700;color:var(--gold);letter-spacing:3px;text-shadow:0 0 20px rgba(200,168,75,0.4);line-height:1;}
+.clan-tag{font-family:"Cinzel",serif;font-size:10px;color:var(--text-secondary);letter-spacing:1.5px;margin-top:4px;}
+.btn-export{padding:7px 14px;border-radius:4px;border:1px solid var(--gold-dim);background:rgba(200,168,75,0.1);color:var(--gold);font-family:"Cinzel",serif;font-size:11px;letter-spacing:1px;cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;}
 .btn-export:hover{background:rgba(200,168,75,0.2);}
 .stats-bar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);}
 .stat{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:10px 8px;text-align:center;position:relative;overflow:hidden;}
-.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);}
-.stat-val{font-family:'Cinzel',serif;font-size:clamp(15px,3vw,20px);font-weight:600;color:var(--gold);display:block;}
+.stat::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);}
+.stat-val{font-family:"Cinzel",serif;font-size:clamp(15px,3vw,20px);font-weight:600;color:var(--gold);display:block;}
 .stat-val.danger{color:var(--inactive-col);}.stat-val.success{color:var(--online-col);}
 .stat-label{font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px;display:block;}
+.sync-bar{padding:6px 1.5rem;font-family:"Cinzel",serif;font-size:10px;letter-spacing:1px;text-align:center;display:none;}
+.sync-ok{background:rgba(29,158,117,0.1);color:var(--online-col);border-bottom:1px solid rgba(29,158,117,0.2);}
+.sync-err{background:rgba(192,57,43,0.1);color:var(--inactive-col);border-bottom:1px solid rgba(192,57,43,0.2);}
+.sync-loading{background:rgba(200,168,75,0.08);color:var(--gold);border-bottom:1px solid var(--border);}
+.legend{display:flex;align-items:center;gap:14px;padding:0.5rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.1);}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-secondary);}
 .controls{padding:0.75rem 1.5rem;display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:rgba(0,0,0,0.15);border-bottom:1px solid var(--border);}
-.controls input,.controls select{background:var(--bg-card);border:1px solid var(--border);color:var(--text-primary);padding:7px 10px;border-radius:4px;font-family:'Crimson Pro',serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+.controls input,.controls select{background:var(--bg-card);border:1px solid var(--border);color:var(--text-primary);padding:7px 10px;border-radius:4px;font-family:"Crimson Pro",serif;font-size:14px;outline:none;transition:border-color 0.2s;}
 .controls input:focus,.controls select:focus{border-color:var(--gold-dim);}
 .controls input{min-width:140px;flex:1;}
 .controls select option{background:var(--bg-card);}
-.btn{padding:7px 14px;border-radius:4px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.btn{padding:7px 14px;border-radius:4px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary);font-family:"Cinzel",serif;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
 .btn:hover{border-color:var(--gold-dim);color:var(--gold);background:rgba(200,168,75,0.08);}
 .btn-gold{border-color:var(--gold-dim);color:var(--gold);background:rgba(200,168,75,0.1);}
 .btn-gold:hover{background:rgba(200,168,75,0.2);border-color:var(--gold);}
 .btn-danger{border-color:rgba(192,57,43,0.4);color:#e74c3c;}
 .btn-danger:hover{background:rgba(192,57,43,0.15);border-color:#c0392b;}
 .btn-sm{padding:4px 9px;font-size:10px;}
-/* Estado como punto de color junto al nombre */
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;flex-shrink:0;}
 .dot-online{background:var(--online-col);box-shadow:0 0 5px var(--online-col);}
 .dot-reciente{background:var(--recent-col);box-shadow:0 0 5px var(--recent-col);}
 .dot-inactivo{background:var(--inactive-col);box-shadow:0 0 5px var(--inactive-col);}
 .dot-unknown{background:var(--text-muted);}
-/* TABLA DESKTOP */
 .table-wrap{padding:0 1.5rem 2rem;overflow-x:auto;}
 table{width:100%;border-collapse:collapse;table-layout:fixed;}
-thead th{font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:2px;color:var(--gold-dim);text-transform:uppercase;padding:10px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;background:var(--bg-mid);}
+thead th{font-family:"Cinzel",serif;font-size:10px;font-weight:600;letter-spacing:2px;color:var(--gold-dim);text-transform:uppercase;padding:10px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;background:var(--bg-mid);}
 tbody tr{border-bottom:1px solid rgba(200,168,75,0.06);transition:background 0.15s;}
 tbody tr:hover{background:var(--bg-hover);}
 tbody tr.flag-inactive{background:rgba(192,57,43,0.06);}
@@ -52,39 +56,33 @@ tbody tr.flag-inactive:hover{background:rgba(192,57,43,0.12);}
 td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .name-cell{display:flex;align-items:center;font-weight:500;}
 .col-n{width:19%}.col-f{width:10%}.col-x{width:11%}.col-p{width:10%}.col-a{width:9%}.col-r{width:11%}.col-w{width:7%}.col-no{width:14%}.col-ac{width:9%}
-/* TARJETAS MÓVIL */
 .mobile-list{display:none;padding:0.75rem 1rem 2rem;}
 .m-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;}
 .m-card.inactive{border-color:rgba(192,57,43,0.4);background:rgba(192,57,43,0.04);}
 .m-card-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);}
-.m-name{font-family:'Cinzel',serif;font-size:13px;color:var(--text-primary);font-weight:600;display:flex;align-items:center;gap:6px;}
+.m-name{font-family:"Cinzel",serif;font-size:13px;color:var(--text-primary);font-weight:600;display:flex;align-items:center;gap:6px;}
 .m-card-body{padding:10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;}
 .m-field{display:flex;flex-direction:column;gap:1px;}
 .m-field-label{font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;}
 .m-field-val{font-size:13px;color:var(--text-primary);}
 .m-card-footer{padding:8px 14px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border);background:rgba(0,0,0,0.1);}
 .m-notas{grid-column:1/-1;font-size:12px;color:var(--text-muted);font-style:italic;}
-/* BADGES */
-.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-family:'Cinzel',serif;letter-spacing:0.5px;font-weight:600;}
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-family:"Cinzel",serif;letter-spacing:0.5px;font-weight:600;}
 .b-lider{background:rgba(200,168,75,0.15);color:var(--gold);border:1px solid rgba(200,168,75,0.35);}
 .b-veterano{background:rgba(100,80,160,0.15);color:#a78bfa;border:1px solid rgba(100,80,160,0.3);}
 .b-miembro{background:rgba(40,50,70,0.5);color:var(--text-secondary);border:1px solid var(--border);}
 .stars{color:var(--gold);font-size:12px;}.star-empty{color:var(--text-muted);font-size:12px;}
 .wa-yes{color:var(--online-col);font-weight:600;}.wa-no{color:var(--inactive-col);font-weight:600;}
 .notas-cell{font-size:12px;color:var(--text-muted);font-style:italic;}
-.empty-msg{text-align:center;padding:3rem;color:var(--text-muted);font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;}
-/* LEYENDA ESTADO */
-.legend{display:flex;align-items:center;gap:14px;padding:0.5rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.1);}
-.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-secondary);}
-/* MODAL */
+.empty-msg{text-align:center;padding:3rem;color:var(--text-muted);font-family:"Cinzel",serif;font-size:13px;letter-spacing:2px;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px);}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:8px;padding:1.5rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 0 40px rgba(200,168,75,0.15);}
-.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-.modal-title{font-family:'Cinzel',serif;font-size:16px;color:var(--gold);letter-spacing:2px;margin-bottom:1.25rem;text-align:center;}
+.modal::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.modal-title{font-family:"Cinzel",serif;font-size:16px;color:var(--gold);letter-spacing:2px;margin-bottom:1.25rem;text-align:center;}
 .field{margin-bottom:12px;}
-.field label{display:block;font-size:10px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;font-family:'Cinzel',serif;}
-.field input,.field select,.field textarea{width:100%;background:var(--bg-mid);border:1px solid var(--border);color:var(--text-primary);padding:8px 10px;border-radius:4px;font-family:'Crimson Pro',serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+.field label{display:block;font-size:10px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;font-family:"Cinzel",serif;}
+.field input,.field select,.field textarea{width:100%;background:var(--bg-mid);border:1px solid var(--border);color:var(--text-primary);padding:8px 10px;border-radius:4px;font-family:"Crimson Pro",serif;font-size:14px;outline:none;transition:border-color 0.2s;}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold-dim);}
 .field select option{background:var(--bg-card);}
 .field textarea{resize:vertical;min-height:56px;}
@@ -123,9 +121,10 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
   </div>
   <button class="btn-export" onclick="exportarCSV()">⬇ CSV</button>
 </div>
+<div id="sync-bar" class="sync-bar sync-loading">⚔ Conectando con la nube...</div>
 <div class="stats-bar" id="stats-bar"></div>
 <div class="legend">
-  <span style="font-size:11px;color:var(--text-muted);font-family:'Cinzel',serif;letter-spacing:1px;margin-right:4px;">ESTADO:</span>
+  <span style="font-size:11px;color:var(--text-muted);font-family:Cinzel,serif;letter-spacing:1px;margin-right:4px;">ESTADO:</span>
   <span class="legend-item"><span class="dot dot-online"></span>En línea</span>
   <span class="legend-item"><span class="dot dot-reciente"></span>Reciente</span>
   <span class="legend-item"><span class="dot dot-inactivo"></span>Inactivo</span>
@@ -173,7 +172,6 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
 <div class="mobile-list" id="mobile-list"></div>
 <div id="empty-mob" class="empty-msg" style="display:none;padding:2rem 1rem;">— SIN RESULTADOS —</div>
 
-<!-- MODAL AÑADIR/EDITAR -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-title" id="modal-title">RECLUTAR GUERRERO</div>
@@ -212,7 +210,6 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
   </div>
 </div>
 
-<!-- MODAL CONFIRMAR EXPULSIÓN -->
 <div class="modal-overlay" id="confirm-overlay">
   <div class="modal confirm-modal">
     <div class="modal-title" style="color:#e74c3c;">⚔ EXPULSAR</div>
@@ -224,67 +221,93 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
   </div>
 </div>
 
-<script>
-const SK='valhalla_cp_v4';
-const DD=[
-  {id:1,nombre:'Warbury',llegada:'2024-09-01',conexion:'online',xp:21217,poder:10.45,actividad:1,rango:'Veterano',whatsapp:'si',notas:''},
-  {id:2,nombre:'SentryK',llegada:'2024-01-15',conexion:'reciente',xp:38962,poder:28.11,actividad:1,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:3,nombre:'**ASRAEL**',llegada:'2024-03-10',conexion:'online',xp:4627,poder:25.4,actividad:2,rango:'Miembro',whatsapp:'no',notas:''},
-  {id:4,nombre:'[V1A]zZzeT@',llegada:'2024-02-20',conexion:'online',xp:34626,poder:24.48,actividad:2,rango:'Veterano',whatsapp:'si',notas:''},
-  {id:5,nombre:'Jmbasulto',llegada:'2023-11-05',conexion:'reciente',xp:41658,poder:22.31,actividad:1,rango:'Líder',whatsapp:'si',notas:''},
-  {id:6,nombre:'Arevol',llegada:'2024-01-08',conexion:'online',xp:15032,poder:21.22,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:7,nombre:'Pukitosllstar',llegada:'2024-04-01',conexion:'reciente',xp:35695,poder:20.7,actividad:1,rango:'Miembro',whatsapp:'no',notas:''},
-  {id:8,nombre:'Yochuta',llegada:'2024-05-12',conexion:'online',xp:12000,poder:18.5,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:9,nombre:'RaulR91',llegada:'2024-06-01',conexion:'reciente',xp:9800,poder:15.0,actividad:1,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:10,nombre:'Darkleto',llegada:'2024-03-22',conexion:'inactivo',xp:3200,poder:12.3,actividad:1,rango:'Miembro',whatsapp:'no',notas:'Sin actividad reciente'},
-  {id:11,nombre:'Arevol.01',llegada:'2024-07-10',conexion:'online',xp:22000,poder:19.8,actividad:3,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:12,nombre:'BillyKnight',llegada:'2024-08-05',conexion:'reciente',xp:17500,poder:17.2,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:13,nombre:'Zidane357',llegada:'2024-02-14',conexion:'inactivo',xp:2100,poder:9.5,actividad:1,rango:'Miembro',whatsapp:'no',notas:'Candidato a expulsión'},
-  {id:14,nombre:'orph@nbutch3r',llegada:'2024-09-15',conexion:'online',xp:31000,poder:23.6,actividad:3,rango:'Veterano',whatsapp:'si',notas:''},
-  {id:15,nombre:'ELPACHORRA',llegada:'2024-01-30',conexion:'reciente',xp:14200,poder:16.7,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:16,nombre:'[V1A]Arectar',llegada:'2023-12-01',conexion:'online',xp:28900,poder:22.0,actividad:3,rango:'Veterano',whatsapp:'si',notas:''},
-  {id:17,nombre:'[V1A] Dtelo',llegada:'2023-10-20',conexion:'online',xp:21217,poder:10.45,actividad:1,rango:'Veterano',whatsapp:'si',notas:''},
-  {id:18,nombre:'PaladinJotah',llegada:'2024-05-05',conexion:'reciente',xp:19300,poder:20.1,actividad:2,rango:'Miembro',whatsapp:'no',notas:''},
-  {id:19,nombre:'[V1A]Joseles',llegada:'2024-04-18',conexion:'online',xp:25600,poder:21.9,actividad:2,rango:'Veterano',whatsapp:'si',notas:''},
-  {id:20,nombre:'[V1A] Kryla',llegada:'2024-06-28',conexion:'online',xp:33400,poder:24.0,actividad:3,rango:'Veterano',whatsapp:'si',notas:''},
-  {id:21,nombre:'PukitoslIstar',llegada:'2024-03-05',conexion:'reciente',xp:11800,poder:14.5,actividad:1,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:22,nombre:'Nygran',llegada:'2024-07-22',conexion:'online',xp:18700,poder:17.8,actividad:2,rango:'Miembro',whatsapp:'no',notas:''},
-  {id:23,nombre:'ASRAEL',llegada:'2024-02-02',conexion:'inactivo',xp:1500,poder:8.0,actividad:1,rango:'Miembro',whatsapp:'no',notas:'Candidato a expulsión'},
-  {id:24,nombre:'Kitxu',llegada:'2024-08-19',conexion:'online',xp:27300,poder:22.8,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:25,nombre:'Verne2099',llegada:'2024-09-10',conexion:'reciente',xp:16100,poder:16.0,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:26,nombre:'Nacheas Haze',llegada:'2024-05-30',conexion:'online',xp:29800,poder:23.1,actividad:3,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:27,nombre:'Cr787',llegada:'2024-07-01',conexion:'inactivo',xp:800,poder:7.2,actividad:1,rango:'Miembro',whatsapp:'no',notas:'Sin actividad'},
-  {id:28,nombre:'Xhennon',llegada:'2024-09-25',conexion:'online',xp:23500,poder:21.5,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:29,nombre:'Sir Zerg',llegada:'2024-10-01',conexion:'reciente',xp:13400,poder:15.9,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:30,nombre:'NecochenseAmor',llegada:'2024-08-28',conexion:'online',xp:30200,poder:23.4,actividad:3,rango:'Miembro',whatsapp:'si',notas:''},
-  {id:31,nombre:'Kaiiin',llegada:'2024-11-05',conexion:'online',xp:19900,poder:18.7,actividad:2,rango:'Miembro',whatsapp:'no',notas:''},
-  {id:32,nombre:'Joard_7',llegada:'2024-10-15',conexion:'reciente',xp:15600,poder:16.3,actividad:1,rango:'Miembro',whatsapp:'si',notas:''},
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBss-5mbXhe4UADlUKBSm9FVTGWdosmrvg",
+  authDomain: "valhalla-cp.firebaseapp.com",
+  projectId: "valhalla-cp",
+  storageBucket: "valhalla-cp.firebasestorage.app",
+  messagingSenderId: "1004836811625",
+  appId: "1:1004836811625:web:6c36e7b7fe5ed2e21283f8"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const COL = "miembros";
+
+function syncBar(msg, tipo){
+  const el = document.getElementById("sync-bar");
+  el.style.display = "block";
+  el.className = "sync-bar sync-" + tipo;
+  el.textContent = msg;
+  if(tipo === "ok") setTimeout(()=>{ el.style.display="none"; }, 3000);
+}
+
+const defaultData = [
+  {id:"1",nombre:"Warbury",llegada:"2024-09-01",conexion:"online",xp:21217,poder:10.45,actividad:1,rango:"Veterano",whatsapp:"si",notas:""},
+  {id:"2",nombre:"SentryK",llegada:"2024-01-15",conexion:"reciente",xp:38962,poder:28.11,actividad:1,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"3",nombre:"**ASRAEL**",llegada:"2024-03-10",conexion:"online",xp:4627,poder:25.4,actividad:2,rango:"Miembro",whatsapp:"no",notas:""},
+  {id:"4",nombre:"[V1A]zZzeT@",llegada:"2024-02-20",conexion:"online",xp:34626,poder:24.48,actividad:2,rango:"Veterano",whatsapp:"si",notas:""},
+  {id:"5",nombre:"Jmbasulto",llegada:"2023-11-05",conexion:"reciente",xp:41658,poder:22.31,actividad:1,rango:"Líder",whatsapp:"si",notas:""},
+  {id:"6",nombre:"Arevol",llegada:"2024-01-08",conexion:"online",xp:15032,poder:21.22,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"7",nombre:"Pukitosllstar",llegada:"2024-04-01",conexion:"reciente",xp:35695,poder:20.7,actividad:1,rango:"Miembro",whatsapp:"no",notas:""},
+  {id:"8",nombre:"Yochuta",llegada:"2024-05-12",conexion:"online",xp:12000,poder:18.5,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"9",nombre:"RaulR91",llegada:"2024-06-01",conexion:"reciente",xp:9800,poder:15.0,actividad:1,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"10",nombre:"Darkleto",llegada:"2024-03-22",conexion:"inactivo",xp:3200,poder:12.3,actividad:1,rango:"Miembro",whatsapp:"no",notas:"Sin actividad reciente"},
+  {id:"11",nombre:"Arevol.01",llegada:"2024-07-10",conexion:"online",xp:22000,poder:19.8,actividad:3,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"12",nombre:"BillyKnight",llegada:"2024-08-05",conexion:"reciente",xp:17500,poder:17.2,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"13",nombre:"Zidane357",llegada:"2024-02-14",conexion:"inactivo",xp:2100,poder:9.5,actividad:1,rango:"Miembro",whatsapp:"no",notas:"Candidato a expulsión"},
+  {id:"14",nombre:"orph@nbutch3r",llegada:"2024-09-15",conexion:"online",xp:31000,poder:23.6,actividad:3,rango:"Veterano",whatsapp:"si",notas:""},
+  {id:"15",nombre:"ELPACHORRA",llegada:"2024-01-30",conexion:"reciente",xp:14200,poder:16.7,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"16",nombre:"[V1A]Arectar",llegada:"2023-12-01",conexion:"online",xp:28900,poder:22.0,actividad:3,rango:"Veterano",whatsapp:"si",notas:""},
+  {id:"17",nombre:"[V1A] Dtelo",llegada:"2023-10-20",conexion:"online",xp:21217,poder:10.45,actividad:1,rango:"Veterano",whatsapp:"si",notas:""},
+  {id:"18",nombre:"PaladinJotah",llegada:"2024-05-05",conexion:"reciente",xp:19300,poder:20.1,actividad:2,rango:"Miembro",whatsapp:"no",notas:""},
+  {id:"19",nombre:"[V1A]Joseles",llegada:"2024-04-18",conexion:"online",xp:25600,poder:21.9,actividad:2,rango:"Veterano",whatsapp:"si",notas:""},
+  {id:"20",nombre:"[V1A] Kryla",llegada:"2024-06-28",conexion:"online",xp:33400,poder:24.0,actividad:3,rango:"Veterano",whatsapp:"si",notas:""},
+  {id:"21",nombre:"PukitoslIstar",llegada:"2024-03-05",conexion:"reciente",xp:11800,poder:14.5,actividad:1,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"22",nombre:"Nygran",llegada:"2024-07-22",conexion:"online",xp:18700,poder:17.8,actividad:2,rango:"Miembro",whatsapp:"no",notas:""},
+  {id:"23",nombre:"ASRAEL",llegada:"2024-02-02",conexion:"inactivo",xp:1500,poder:8.0,actividad:1,rango:"Miembro",whatsapp:"no",notas:"Candidato a expulsión"},
+  {id:"24",nombre:"Kitxu",llegada:"2024-08-19",conexion:"online",xp:27300,poder:22.8,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"25",nombre:"Verne2099",llegada:"2024-09-10",conexion:"reciente",xp:16100,poder:16.0,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"26",nombre:"Nacheas Haze",llegada:"2024-05-30",conexion:"online",xp:29800,poder:23.1,actividad:3,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"27",nombre:"Cr787",llegada:"2024-07-01",conexion:"inactivo",xp:800,poder:7.2,actividad:1,rango:"Miembro",whatsapp:"no",notas:"Sin actividad"},
+  {id:"28",nombre:"Xhennon",llegada:"2024-09-25",conexion:"online",xp:23500,poder:21.5,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"29",nombre:"Sir Zerg",llegada:"2024-10-01",conexion:"reciente",xp:13400,poder:15.9,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"30",nombre:"NecochenseAmor",llegada:"2024-08-28",conexion:"online",xp:30200,poder:23.4,actividad:3,rango:"Miembro",whatsapp:"si",notas:""},
+  {id:"31",nombre:"Kaiiin",llegada:"2024-11-05",conexion:"online",xp:19900,poder:18.7,actividad:2,rango:"Miembro",whatsapp:"no",notas:""},
+  {id:"32",nombre:"Joard_7",llegada:"2024-10-15",conexion:"reciente",xp:15600,poder:16.3,actividad:1,rango:"Miembro",whatsapp:"si",notas:""}
 ];
-function cargar(){try{const r=localStorage.getItem(SK);return r?JSON.parse(r):DD;}catch(e){return DD;}}
-function save(){localStorage.setItem(SK,JSON.stringify(miembros));}
-let miembros=cargar(),nextId=Math.max(...miembros.map(m=>m.id),0)+1,editandoId=null,expulsandoId=null;
-function dot(c){const cls={online:'dot-online',reciente:'dot-reciente',inactivo:'dot-inactivo'};return`<span class="dot ${cls[c]||'dot-unknown'}"></span>`;}
-function rB(r){const cls={'Líder':'b-lider','Veterano':'b-veterano','Miembro':'b-miembro'};return`<span class="badge ${cls[r]||'b-miembro'}">${r}</span>`;}
-function st(n){let s='';for(let i=1;i<=3;i++)s+=i<=n?'<span class="stars">★</span>':'<span class="star-empty">☆</span>';return s;}
-function fF(d){if(!d)return'—';const p=d.split('-');return p.length<3?'—':p[2]+'/'+p[1]+'/'+p[0].slice(2);}
-function fX(x){return x?Number(x).toLocaleString('es-ES'):'—';}
-function fP(p){return p?parseFloat(p).toFixed(2)+'M':'—';}
-function estadoLabel(c){return{online:'En línea',reciente:'Reciente',inactivo:'Inactivo','?':'—'}[c]||'—';}
+
+let miembros = [];
+let editandoId = null, expulsandoId = null;
+
+function dot(c){const cls={online:"dot-online",reciente:"dot-reciente",inactivo:"dot-inactivo"};return`<span class="dot ${cls[c]||"dot-unknown"}"></span>`;}
+function rB(r){const cls={"Líder":"b-lider","Veterano":"b-veterano","Miembro":"b-miembro"};return`<span class="badge ${cls[r]||"b-miembro"}">${r}</span>`;}
+function st(n){let s="";for(let i=1;i<=3;i++)s+=i<=n?"<span class='stars'>★</span>":"<span class='star-empty'>☆</span>";return s;}
+function fF(d){if(!d)return"—";const p=d.split("-");return p.length<3?"—":p[2]+"/"+p[1]+"/"+p[0].slice(2);}
+function fX(x){return x?Number(x).toLocaleString("es-ES"):"—";}
+function fP(p){return p?parseFloat(p).toFixed(2)+"M":"—";}
+function estadoLabel(c){return{online:"En línea",reciente:"Reciente",inactivo:"Inactivo","?":"—"}[c]||"—";}
+
 function updateStats(){
-  const t=miembros.length,on=miembros.filter(m=>m.conexion==='online').length;
-  const inac=miembros.filter(m=>m.conexion==='inactivo').length;
+  const t=miembros.length,on=miembros.filter(m=>m.conexion==="online").length;
+  const inac=miembros.filter(m=>m.conexion==="inactivo").length;
   const xT=miembros.reduce((a,m)=>a+(parseInt(m.xp)||0),0);
   const pT=miembros.reduce((a,m)=>a+(parseFloat(m.poder)||0),0);
-  document.getElementById('stats-bar').innerHTML=`
+  document.getElementById("stats-bar").innerHTML=`
     <div class="stat"><span class="stat-val">${t}/30</span><span class="stat-label">Miembros</span></div>
     <div class="stat"><span class="stat-val success">${on}</span><span class="stat-label">En línea</span></div>
-    <div class="stat"><span class="stat-val${inac>0?' danger':''}">${inac}</span><span class="stat-label">Inactivos</span></div>
-    <div class="stat"><span class="stat-val">${xT.toLocaleString('es-ES')}</span><span class="stat-label">XP Total</span></div>
+    <div class="stat"><span class="stat-val${inac>0?" danger":""}">${inac}</span><span class="stat-label">Inactivos</span></div>
+    <div class="stat"><span class="stat-val">${xT.toLocaleString("es-ES")}</span><span class="stat-label">XP Total</span></div>
     <div class="stat"><span class="stat-val">${Math.round(pT)}M</span><span class="stat-label">Poder</span></div>`;
 }
+
 function filtrar(){
-  const q=document.getElementById('search').value.toLowerCase();
-  const fe=document.getElementById('f-estado').value,fr=document.getElementById('f-rango').value,ord=document.getElementById('f-orden').value;
+  const q=document.getElementById("search").value.toLowerCase();
+  const fe=document.getElementById("f-estado").value,fr=document.getElementById("f-rango").value,ord=document.getElementById("f-orden").value;
   let l=miembros.filter(m=>{
     if(q&&!m.nombre.toLowerCase().includes(q))return false;
     if(fe&&m.conexion!==fe)return false;
@@ -292,97 +315,145 @@ function filtrar(){
     return true;
   });
   l.sort((a,b)=>{
-    if(ord==='xp')return(parseInt(b.xp)||0)-(parseInt(a.xp)||0);
-    if(ord==='poder')return(parseFloat(b.poder)||0)-(parseFloat(a.poder)||0);
-    if(ord==='actividad')return(parseInt(b.actividad)||0)-(parseInt(a.actividad)||0);
-    if(ord==='llegada')return(a.llegada||'').localeCompare(b.llegada||'');
+    if(ord==="xp")return(parseInt(b.xp)||0)-(parseInt(a.xp)||0);
+    if(ord==="poder")return(parseFloat(b.poder)||0)-(parseFloat(a.poder)||0);
+    if(ord==="actividad")return(parseInt(b.actividad)||0)-(parseInt(a.actividad)||0);
+    if(ord==="llegada")return(a.llegada||"").localeCompare(b.llegada||"");
     return a.nombre.localeCompare(b.nombre);
   });
   return l;
 }
+
 function render(){
   updateStats();
   const lista=filtrar(),empty=lista.length===0;
-  document.getElementById('empty-desk').style.display=empty?'block':'none';
-  document.getElementById('empty-mob').style.display=empty?'block':'none';
-  document.getElementById('tbody').innerHTML=empty?'':lista.map(m=>{
-    const rc=m.conexion==='inactivo'?' class="flag-inactive"':'';
-    const wa=m.whatsapp==='si'?'<span class="wa-yes">✓</span>':'<span class="wa-no">✗</span>';
+  document.getElementById("empty-desk").style.display=empty?"block":"none";
+  document.getElementById("empty-mob").style.display=empty?"block":"none";
+  document.getElementById("tbody").innerHTML=empty?"":lista.map(m=>{
+    const rc=m.conexion==="inactivo"?" class=\"flag-inactive\"":" ";
+    const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓</span>":"<span class=\"wa-no\">✗</span>";
     return`<tr${rc}>
       <td><div class="name-cell">${dot(m.conexion)}<span style="overflow:hidden;text-overflow:ellipsis" title="${m.nombre}">${m.nombre}</span></div></td>
-      <td>${fF(m.llegada)}</td>
-      <td>${fX(m.xp)}</td>
-      <td>${fP(m.poder)}</td>
-      <td>${st(parseInt(m.actividad)||1)}</td>
-      <td>${rB(m.rango)}</td>
+      <td>${fF(m.llegada)}</td><td>${fX(m.xp)}</td><td>${fP(m.poder)}</td>
+      <td>${st(parseInt(m.actividad)||1)}</td><td>${rB(m.rango)}</td>
       <td style="text-align:center">${wa}</td>
-      <td class="notas-cell" title="${m.notas||''}">${m.notas||''}</td>
+      <td class="notas-cell" title="${m.notas||""}">${m.notas||""}</td>
       <td><div style="display:flex;gap:4px">
-        <button class="btn btn-sm" onclick="abrirModal(${m.id})">Editar</button>
-        <button class="btn btn-sm btn-danger" onclick="pedirExpulsion(${m.id})">Expulsar</button>
+        <button class="btn btn-sm" onclick="window.editarM('${m.id}')">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="window.expulsarM('${m.id}')">Expulsar</button>
       </div></td>
     </tr>`;
-  }).join('');
-  document.getElementById('mobile-list').innerHTML=empty?'':lista.map(m=>{
-    const ic=m.conexion==='inactivo'?' inactive':'';
-    const wa=m.whatsapp==='si'?'<span class="wa-yes">✓ WA</span>':'<span class="wa-no">✗ WA</span>';
+  }).join("");
+  document.getElementById("mobile-list").innerHTML=empty?"":lista.map(m=>{
+    const ic=m.conexion==="inactivo"?" inactive":"";
+    const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓ WA</span>":"<span class=\"wa-no\">✗ WA</span>";
     return`<div class="m-card${ic}">
-      <div class="m-card-header">
-        <span class="m-name">${dot(m.conexion)}${m.nombre}</span>
-        <div style="display:flex;gap:6px;align-items:center">${rB(m.rango)} ${wa}</div>
-      </div>
+      <div class="m-card-header"><span class="m-name">${dot(m.conexion)}${m.nombre}</span>
+      <div style="display:flex;gap:6px;align-items:center">${rB(m.rango)} ${wa}</div></div>
       <div class="m-card-body">
         <div class="m-field"><span class="m-field-label">Estado</span><span class="m-field-val">${estadoLabel(m.conexion)}</span></div>
         <div class="m-field"><span class="m-field-label">Entrada</span><span class="m-field-val">${fF(m.llegada)}</span></div>
         <div class="m-field"><span class="m-field-label">XP Clan</span><span class="m-field-val">${fX(m.xp)}</span></div>
         <div class="m-field"><span class="m-field-label">Poder</span><span class="m-field-val">${fP(m.poder)}</span></div>
         <div class="m-field"><span class="m-field-label">Actividad</span><span class="m-field-val">${st(parseInt(m.actividad)||1)}</span></div>
-        ${m.notas?`<div class="m-field m-notas"><span class="m-field-label">Notas</span><span>${m.notas}</span></div>`:''}
+        ${m.notas?`<div class="m-field m-notas"><span class="m-field-label">Notas</span><span>${m.notas}</span></div>`:""}
       </div>
       <div class="m-card-footer">
-        <button class="btn btn-sm" onclick="abrirModal(${m.id})">Editar</button>
-        <button class="btn btn-sm btn-danger" onclick="pedirExpulsion(${m.id})">Expulsar</button>
+        <button class="btn btn-sm" onclick="window.editarM('${m.id}')">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="window.expulsarM('${m.id}')">Expulsar</button>
       </div>
     </div>`;
-  }).join('');
+  }).join("");
 }
+
+window.editarM = function(id){ abrirModal(id); };
+window.expulsarM = function(id){ pedirExpulsion(id); };
+
 function abrirModal(id=null){
-  editandoId=id;const m=id?miembros.find(x=>x.id===id):null;
-  document.getElementById('modal-title').textContent=id?'EDITAR GUERRERO':'RECLUTAR GUERRERO';
-  document.getElementById('m-nombre').value=m?m.nombre:'';
-  document.getElementById('m-llegada').value=m?m.llegada:'';
-  document.getElementById('m-conexion').value=m?(m.conexion||'online'):'online';
-  document.getElementById('m-xp').value=m?m.xp:'';
-  document.getElementById('m-poder').value=m?m.poder:'';
-  document.getElementById('m-actividad').value=m?(m.actividad||2):2;
-  document.getElementById('m-rango').value=m?(m.rango||'Miembro'):'Miembro';
-  document.getElementById('m-whatsapp').value=m?(m.whatsapp||'si'):'si';
-  document.getElementById('m-notas').value=m?m.notas:'';
-  document.getElementById('modal-overlay').classList.add('open');
-  setTimeout(()=>document.getElementById('m-nombre').focus(),150);
+  editandoId=id;
+  const m=id?miembros.find(x=>x.id===id):null;
+  document.getElementById("modal-title").textContent=id?"EDITAR GUERRERO":"RECLUTAR GUERRERO";
+  document.getElementById("m-nombre").value=m?m.nombre:"";
+  document.getElementById("m-llegada").value=m?m.llegada:"";
+  document.getElementById("m-conexion").value=m?(m.conexion||"online"):"online";
+  document.getElementById("m-xp").value=m?m.xp:"";
+  document.getElementById("m-poder").value=m?m.poder:"";
+  document.getElementById("m-actividad").value=m?(m.actividad||2):2;
+  document.getElementById("m-rango").value=m?(m.rango||"Miembro"):"Miembro";
+  document.getElementById("m-whatsapp").value=m?(m.whatsapp||"si"):"si";
+  document.getElementById("m-notas").value=m?m.notas:"";
+  document.getElementById("modal-overlay").classList.add("open");
+  setTimeout(()=>document.getElementById("m-nombre").focus(),150);
 }
-function cerrarModal(){document.getElementById('modal-overlay').classList.remove('open');editandoId=null;}
-function guardar(){
-  const nombre=document.getElementById('m-nombre').value.trim();
-  if(!nombre){alert('El nombre es obligatorio.');return;}
-  const datos={nombre,llegada:document.getElementById('m-llegada').value,conexion:document.getElementById('m-conexion').value,xp:parseInt(document.getElementById('m-xp').value)||0,poder:parseFloat(document.getElementById('m-poder').value)||0,actividad:parseInt(document.getElementById('m-actividad').value)||1,rango:document.getElementById('m-rango').value,whatsapp:document.getElementById('m-whatsapp').value,notas:document.getElementById('m-notas').value.trim()};
-  if(editandoId){const idx=miembros.findIndex(m=>m.id===editandoId);if(idx>=0)miembros[idx]={...miembros[idx],...datos};}
-  else{if(miembros.length>=30){alert('El clan está lleno (30/30).');return;}miembros.push({id:nextId++,...datos});}
-  save();cerrarModal();render();
+window.abrirModal = abrirModal;
+
+function cerrarModal(){document.getElementById("modal-overlay").classList.remove("open");editandoId=null;}
+window.cerrarModal = cerrarModal;
+
+async function guardar(){
+  const nombre=document.getElementById("m-nombre").value.trim();
+  if(!nombre){alert("El nombre es obligatorio.");return;}
+  const id = editandoId || Date.now().toString();
+  const datos={id,nombre,llegada:document.getElementById("m-llegada").value,conexion:document.getElementById("m-conexion").value,xp:parseInt(document.getElementById("m-xp").value)||0,poder:parseFloat(document.getElementById("m-poder").value)||0,actividad:parseInt(document.getElementById("m-actividad").value)||1,rango:document.getElementById("m-rango").value,whatsapp:document.getElementById("m-whatsapp").value,notas:document.getElementById("m-notas").value.trim()};
+  if(!editandoId && miembros.length>=30){alert("El clan está lleno (30/30).");return;}
+  try{
+    syncBar("⚔ Guardando...", "loading");
+    await setDoc(doc(db, COL, id), datos);
+    syncBar("✓ Guardado en la nube", "ok");
+    cerrarModal();
+  } catch(e){ syncBar("✗ Error al guardar: "+e.message, "err"); }
 }
-function pedirExpulsion(id){expulsandoId=id;const m=miembros.find(x=>x.id===id);document.getElementById('confirm-name').textContent=m?m.nombre:'';document.getElementById('confirm-overlay').classList.add('open');}
-function cerrarConfirm(){document.getElementById('confirm-overlay').classList.remove('open');expulsandoId=null;}
-function confirmarExpulsion(){if(expulsandoId!==null){miembros=miembros.filter(m=>m.id!==expulsandoId);save();cerrarConfirm();render();}}
-function exportarCSV(){
-  const h=['Nombre','Entrada','Estado','XP Clan','Poder (M)','Actividad','Rango','WhatsApp','Notas'];
-  const rows=miembros.map(m=>[m.nombre,m.llegada||'',m.conexion,m.xp||0,m.poder||0,m.actividad||1,m.rango,m.whatsapp,m.notas||'']);
-  const csv=[h,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));a.download='VALHALLA_CP_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+window.guardar = guardar;
+
+function pedirExpulsion(id){
+  expulsandoId=id;
+  const m=miembros.find(x=>x.id===id);
+  document.getElementById("confirm-name").textContent=m?m.nombre:"";
+  document.getElementById("confirm-overlay").classList.add("open");
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarModal();cerrarConfirm();}});
-document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target.id==='modal-overlay')cerrarModal();});
-document.getElementById('confirm-overlay').addEventListener('click',e=>{if(e.target.id==='confirm-overlay')cerrarConfirm();});
-render();
+function cerrarConfirm(){document.getElementById("confirm-overlay").classList.remove("open");expulsandoId=null;}
+window.cerrarConfirm = cerrarConfirm;
+
+async function confirmarExpulsion(){
+  if(expulsandoId!==null){
+    try{
+      syncBar("⚔ Expulsando...", "loading");
+      await deleteDoc(doc(db, COL, expulsandoId));
+      syncBar("✓ Guerrero expulsado", "ok");
+      cerrarConfirm();
+    } catch(e){ syncBar("✗ Error: "+e.message, "err"); }
+  }
+}
+window.confirmarExpulsion = confirmarExpulsion;
+
+window.exportarCSV = function(){
+  const h=["Nombre","Entrada","Estado","XP Clan","Poder (M)","Actividad","Rango","WhatsApp","Notas"];
+  const rows=miembros.map(m=>[m.nombre,m.llegada||"",m.conexion,m.xp||0,m.poder||0,m.actividad||1,m.rango,m.whatsapp,m.notas||""]);
+  const csv=[h,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,"\"\"")}`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"}));a.download="VALHALLA_CP_"+new Date().toISOString().slice(0,10)+".csv";a.click();
+};
+
+// Escuchar cambios en tiempo real
+syncBar("⚔ Conectando con la nube...", "loading");
+onSnapshot(collection(db, COL), async (snapshot) => {
+  if(snapshot.empty){
+    // Primera vez: cargar datos por defecto
+    syncBar("⚔ Cargando datos iniciales...", "loading");
+    for(const m of defaultData){
+      await setDoc(doc(db, COL, m.id), m);
+    }
+  } else {
+    miembros = snapshot.docs.map(d => d.data());
+    render();
+    syncBar("✓ Sincronizado", "ok");
+  }
+}, (error) => {
+  syncBar("✗ Sin conexión — modo local", "err");
+});
+
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){cerrarModal();cerrarConfirm();}});
+document.getElementById("modal-overlay").addEventListener("click",e=>{if(e.target.id==="modal-overlay")cerrarModal();});
+document.getElementById("confirm-overlay").addEventListener("click",e=>{if(e.target.id==="confirm-overlay")cerrarConfirm();});
 </script>
 </body>
 </html>
