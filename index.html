@@ -517,7 +517,7 @@ async function guardar(){
   const coleccion = modoAliado ? ACOL : COL;
 const id = editandoId || (modoAliado?"a":"") + Date.now().toString();
   const datos={id,nombre,llegada:document.getElementById("m-llegada").value,conexion:document.getElementById("m-conexion").value,xp:parseInt(document.getElementById("m-xp").value)||0,poder:parseFloat(document.getElementById("m-poder").value)||0,actividad:parseInt(document.getElementById("m-actividad").value)||1,rango:document.getElementById("m-rango").value,whatsapp:document.getElementById("m-whatsapp").value,notas:document.getElementById("m-notas").value.trim(),boss:parseInt(document.getElementById("m-boss").value)||0,hydra:parseInt(document.getElementById("m-hydra").value)||0,quimera:parseInt(document.getElementById("m-quimera").value)||0};
-  if(!editandoId && miembros.length>=30){alert("El clan está lleno (30/30).");return;}
+  if(!editandoId && !modoAliado && miembros.length>=30){alert("El clan está lleno (30/30).");return;}
   try{
     syncBar("⚔ Guardando...", "loading");
     await setDoc(doc(db, coleccion, id), datos);
