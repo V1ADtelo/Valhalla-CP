@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>VALHALLA CP — Clan Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-deep:#0a0c0f;--bg-mid:#111418;--bg-card:#161b22;--bg-hover:#1e2535;--gold:#C8A84B;--gold-dim:#8a7030;--border:rgba(200,168,75,0.18);--border-bright:rgba(200,168,75,0.5);--text-primary:#e8e0d0;--text-secondary:#9a9080;--text-muted:#5a5248;--online-col:#27c98f;--recent-col:#f39c12;--inactive-col:#e74c3c;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg-deep);color:var(--text-primary);font-family:'Crimson Pro',Georgia,serif;font-size:15px;background-image:radial-gradient(ellipse at 20% 0%,rgba(122,18,18,0.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(200,168,75,0.06) 0%,transparent 50%);}
+.header{background:linear-gradient(180deg,rgba(122,18,18,0.2) 0%,transparent 100%);border-bottom:1px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;position:relative;}
+.header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);}
+.clan-logo{flex-shrink:0;width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(200,168,75,0.4));}
+.header-info{flex:1;min-width:0;}
+.clan-name{font-family:'Cinzel',serif;font-size:clamp(18px,4vw,26px);font-weight:700;color:var(--gold);letter-spacing:3px;text-shadow:0 0 20px rgba(200,168,75,0.4);line-height:1;}
+.clan-tag{font-family:'Cinzel',serif;font-size:10px;color:var(--text-secondary);letter-spacing:1.5px;margin-top:4px;}
+.btn-export{padding:7px 14px;border-radius:4px;border:1px solid var(--gold-dim);background:rgba(200,168,75,0.1);color:var(--gold);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;}
+.btn-export:hover{background:rgba(200,168,75,0.2);}
+.stats-bar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);}
+.stat{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:10px 8px;text-align:center;position:relative;overflow:hidden;}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);}
+.stat-val{font-family:'Cinzel',serif;font-size:clamp(15px,3vw,20px);font-weight:600;color:var(--gold);display:block;}
+.stat-val.danger{color:var(--inactive-col);}.stat-val.success{color:var(--online-col);}
+.stat-label{font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px;display:block;}
+.controls{padding:0.75rem 1.5rem;display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:rgba(0,0,0,0.15);border-bottom:1px solid var(--border);}
+.controls input,.controls select{background:var(--bg-card);border:1px solid var(--border);color:var(--text-primary);padding:7px 10px;border-radius:4px;font-family:'Crimson Pro',serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+.controls input:focus,.controls select:focus{border-color:var(--gold-dim);}
+.controls input{min-width:140px;flex:1;}
+.controls select option{background:var(--bg-card);}
+.btn{padding:7px 14px;border-radius:4px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.btn:hover{border-color:var(--gold-dim);color:var(--gold);background:rgba(200,168,75,0.08);}
+.btn-gold{border-color:var(--gold-dim);color:var(--gold);background:rgba(200,168,75,0.1);}
+.btn-gold:hover{background:rgba(200,168,75,0.2);border-color:var(--gold);}
+.btn-danger{border-color:rgba(192,57,43,0.4);color:#e74c3c;}
+.btn-danger:hover{background:rgba(192,57,43,0.15);border-color:#c0392b;}
+.btn-sm{padding:4px 9px;font-size:10px;}
+/* Estado como punto de color junto al nombre */
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;flex-shrink:0;}
+.dot-online{background:var(--online-col);box-shadow:0 0 5px var(--online-col);}
+.dot-reciente{background:var(--recent-col);box-shadow:0 0 5px var(--recent-col);}
+.dot-inactivo{background:var(--inactive-col);box-shadow:0 0 5px var(--inactive-col);}
+.dot-unknown{background:var(--text-muted);}
+/* TABLA DESKTOP */
+.table-wrap{padding:0 1.5rem 2rem;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;table-layout:fixed;}
+thead th{font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:2px;color:var(--gold-dim);text-transform:uppercase;padding:10px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;background:var(--bg-mid);}
+tbody tr{border-bottom:1px solid rgba(200,168,75,0.06);transition:background 0.15s;}
+tbody tr:hover{background:var(--bg-hover);}
+tbody tr.flag-inactive{background:rgba(192,57,43,0.06);}
+tbody tr.flag-inactive:hover{background:rgba(192,57,43,0.12);}
+td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.name-cell{display:flex;align-items:center;font-weight:500;}
+.col-n{width:19%}.col-f{width:10%}.col-x{width:11%}.col-p{width:10%}.col-a{width:9%}.col-r{width:11%}.col-w{width:7%}.col-no{width:14%}.col-ac{width:9%}
+/* TARJETAS MÓVIL */
+.mobile-list{display:none;padding:0.75rem 1rem 2rem;}
+.m-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;}
+.m-card.inactive{border-color:rgba(192,57,43,0.4);background:rgba(192,57,43,0.04);}
+.m-card-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);}
+.m-name{font-family:'Cinzel',serif;font-size:13px;color:var(--text-primary);font-weight:600;display:flex;align-items:center;gap:6px;}
+.m-card-body{padding:10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;}
+.m-field{display:flex;flex-direction:column;gap:1px;}
+.m-field-label{font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;}
+.m-field-val{font-size:13px;color:var(--text-primary);}
+.m-card-footer{padding:8px 14px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border);background:rgba(0,0,0,0.1);}
+.m-notas{grid-column:1/-1;font-size:12px;color:var(--text-muted);font-style:italic;}
+/* BADGES */
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-family:'Cinzel',serif;letter-spacing:0.5px;font-weight:600;}
+.b-lider{background:rgba(200,168,75,0.15);color:var(--gold);border:1px solid rgba(200,168,75,0.35);}
+.b-veterano{background:rgba(100,80,160,0.15);color:#a78bfa;border:1px solid rgba(100,80,160,0.3);}
+.b-miembro{background:rgba(40,50,70,0.5);color:var(--text-secondary);border:1px solid var(--border);}
+.stars{color:var(--gold);font-size:12px;}.star-empty{color:var(--text-muted);font-size:12px;}
+.wa-yes{color:var(--online-col);font-weight:600;}.wa-no{color:var(--inactive-col);font-weight:600;}
+.notas-cell{font-size:12px;color:var(--text-muted);font-style:italic;}
+.empty-msg{text-align:center;padding:3rem;color:var(--text-muted);font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;}
+/* LEYENDA ESTADO */
+.legend{display:flex;align-items:center;gap:14px;padding:0.5rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.1);}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-secondary);}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:8px;padding:1.5rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 0 40px rgba(200,168,75,0.15);}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.modal-title{font-family:'Cinzel',serif;font-size:16px;color:var(--gold);letter-spacing:2px;margin-bottom:1.25rem;text-align:center;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:10px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;font-family:'Cinzel',serif;}
+.field input,.field select,.field textarea{width:100%;background:var(--bg-mid);border:1px solid var(--border);color:var(--text-primary);padding:8px 10px;border-radius:4px;font-family:'Crimson Pro',serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold-dim);}
+.field select option{background:var(--bg-card);}
+.field textarea{resize:vertical;min-height:56px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;}
+.confirm-modal{max-width:320px;text-align:center;}
+.confirm-modal p{color:var(--text-secondary);margin-bottom:1.25rem;font-size:15px;line-height:1.5;}
+.name-hl{color:var(--gold);font-weight:500;}
+@media(max-width:700px){
+  .stats-bar{grid-template-columns:repeat(3,1fr);}
+  .stat:nth-child(4),.stat:nth-child(5){display:none;}
+  .table-wrap{display:none;}
+  .mobile-list{display:block;}
+  .clan-tag{display:none;}
+  .legend{display:none;}
+  .grid-3{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:400px){
+  .stats-bar{grid-template-columns:repeat(2,1fr);}
+  .stat:nth-child(3){display:none;}
+  .header{padding:0.75rem 1rem;}
+  .clan-logo{width:52px;height:52px;}
+}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg-deep);}
+::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="header">
+  <img class="clan-logo" src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAClAH0DASIAAhEBAxEB/8QAHAAAAQQDAQAAAAAAAAAAAAAABgACBQcBAwQI/8QARRAAAgEDAgMGBAIGBggHAAAAAQIDBAURAAYSITEHEyJBUWEUQnGRMoEVUmJyobEIIyTB0fAWJzNDgqKz4Rc0U3SSwvH/xAAbAQABBQEBAAAAAAAAAAAAAAAFAAECAwQGB//EADYRAAEDAgQDBAkEAgMAAAAAAAEAAgMEEQUSITFBUWETMoHwBiJicZGhscHRFCTh8SMzcrLC/9oADAMBAAIRAxEAPwDz5GBg8h1OnYHoNNTofqdOzroWWyhBXblLA9BpYHoNLOlnUrhMlgeg0sD0GlnSzpXCSWB6DSwPQaz3VX8ItcaSb4Fqg0oqceAzBQ5TPrwkHWM6iHtdsnII3SwPQaWB6DSzrJjqVo4K54GWjqJ5aeGYkYeSJY2kXHXkJU59Dnl0OEXtFrpAE7JYHppYHprGdLOpXCZZwPTSwPTWM6WdK4SWda5eo0/Otcx5jTG1kgnJ5/U6dpqef11nUWd0JO3KzpaxpakorOmyuEjZ25BRknRJ2YU/Z9X3w2rtEuG4LStTLw0lxoamFaaPI5LMHiYoM/PnAyMhQC2rmfsU7HUuK0Ffu7dNOzuFVZ54Qjj3cQcIHuSNYJq9kTi1wN1oZA52t1C3rZnwH9E23o8C/HsRuHijY+Jm8RLA+a078JHqvnqj0YMgYdCM69w9rlPT7nqduUturKEWJo6r9J1Xep3CRjul4S2eHLcRAH18gcUXU9jvZtFWNR2/dO5avuzwsYqiIquP2u5wR7gnQ2irxGHZ+Oq0zQZrAcFSFRIIoHkboqk6vTtL2S1i/o3WChnpmiulpKXOcGEGTilJ79CRzAXvOZ9IV9OQtZ9ldntz3xa7ZZ7teK2ihrFevqrjVxrRyIjZMSlY1LZxgvxKMdC2cj0j2t26k3fdrdTx3Sig2/LQSJcqr4hQhViV7tWzjiYE458hk+WC9ZXZ3syjbVKKDK03K8TAggEees6uqfsn7NopJI6TdG454oQ3eS99EqIF6ks0IGPcZGqo3ouz4LolFsurvdwSJ/7RW1k0ZgflzWNVjUnnjxkgcjgEENolDXMldlaCszoHNFyVGaWsaWtyzrOtU3lrZrXN5aYpwnp831Os6anzfvHUlR0lDDa/0xeJJVpO8McUUY8UrD39OTDy6ddZp6qOmiD3/wAkrRFA+eQtYo8HLhFBZicBQMk67qaz3WoClKJ0UnGZSEx+R5/w1qfdbxgxWe309DGeXGV4nPoT5ffOuKW4XCsJ+Kq5pAxyVLYX7DloS/EqmTuNDR11PwFh80TZhkbe+SfdopiXbylXiuFzooW/UB4jj88asLsCthr5rrR11zkrrBZ4kdVcMvdyPxEqrdQgVSSuepBGMnNUxAKhY9ANWzYd3WTYPY/SWaOM3Lc97Y3OaiVgUhWTHcmVh+Fe6WN+DmxJ8gc6yyOnkHrvv4Afz81N8McYAY1Tt9r2vEtYlLH8HFFwiiVF4eBRnGcdc+ec9fYaAN8yXWZLZaaqpaC3VkcnfxR+B5pUIyHP6uGGAOWc56DEEK/c7XhtwC5n45iMwAf2fgHSLgzjh6++STnPPR3c7zY959nFdJGpoN0WRhX/AADsOKaJP9q8bH8aCIuxA5jg5jABMWx2OqrLXMIJ2XV2E2dKmkvE14klksdodIqUsfnwWdOIeIhQY8D9rA9NSV+rqm9GpeBTSNG4FHHGAqog6J6c/P356jYd5WjZnZXatt2qKC77juKNca6KJj3VPJL4kE5HzqvApjHPwc+HkTXMdw3RQ3F72l0aorZABNFKv9TIo5heAYAAycYwRk+pyxjJJ5JwxzrkBS/aEbhVyUForblJQ2yop+8KLHhZpVfxB8czjKHBwOecZ1CR7dPKK33GinwMleLhP2GdG28LttvenZi10oXjob/YqmOeqt85xKYZD3bmM9JE4mRiRzHDzAyM1nMuRnVjHzx/6n5elgR+fmpRwxyNtI25HvXdU2i60+TJQyOucAx4fP5Dnrh4hxFTyIOCD1GmxXO5UePhqyZAvReLK/Y8tdibpSbEV7tkFWgHD3sY4ZFHmf8A8xrUzE6mP/Y0OHTQ/A/lQfhkbu4be9c2tc3lqVudFSR2+mutuqHkoqlyirIMMrc+XuPCR+XnnUVN1Gi9PUx1MediFzQPgfkesg4Vv3jqQv7/AOr6zwnH9ZUyv/8AFnH/ANtR3yt9TruviE7M28cfPVf9TQrFtWQ/8v8AyUUwhuadw6fcIfgTXfTpzGtMCaOOymzJdNwVU1RT9/R222VlfUjHRY4HK/8AOUH56HSShjS48F0AgBOqG4og6FWHIjB10Wygp6VcQxgZ5k41mnTVidmOz0ukdTuS+F6bbdqXvquXAzMR0iTOAWY4UZ8zjSkmbG3M5M2mzn3ceQ8/hCkUTI5R1KspwQRgg6xX2eiucXBUxA+466krlWS3S8Vlzmjjjkq6h53WMYVS7FiAPIc9bIF1NrjbVVOiBUXSWylt0HdU0QUevmdMliZyQiljgnAGeQGSftqWnXrrbtu4R2jcVHcKiJpqZJOGpiXGZIWBWVB7sjMPz0nvIBI3SZELi+yCrnbaaqYNLGCwPXWiZOFcDoBqxe07ZVTteviqIG+Lstegnt1agPBLEwBHXowBGQef89Ac6deWoRzNkaHNOisdTZD51UTUxkEhgQRyIOo+oTVh9tNkaxdp24KDukji+NeeBU/CIpD3iY9uFgPy0C1Ce2mjlEjA4cVIwWOimrZC8vZ5LIWJFPcsgegKqMfdtR0p5Lqfsq47L7r/AO9X+cWh6b5fpopgrrskHtH6Bc7i7Ms4935T/J/qdTV3i4uz+wSek1QPvI3+GoZfn/eOim4Q8XZTZZD1FZIo/N5f8NVYybRRH2h/1KvwMXqiOn3CFIU6au3sDt8tR2cdps1HEGrha44Y2H4u7YSmRR9Qg+w1TUCatj+jvvyHY265VuRf9EXJFhqmUZMTKTwS4xkhcsCB5MTzIAIKtzugIYLnQ/AgrrJIy0XAuuLsY2BV753ItNwvHbabD1s45BV/Vz6n0H8OoKe0/csO5Q+3dp0opNqbfjMgKDlOwIjEreWCWCrnn4s9Twiw9zX3akvYtu+TYawUlSsywXWnhIMkLvKqSBuZyhXjAK+E+Ir0OKz2TRf6mN8ViKhdpqGJjjxBBLk49iSv29tZY5nSv7Z4tYgAcr2ufnooB7JBdvdB46Enrqdr6C/zKB4F13QLrVSwu8BnVeKJWVSw6ZIJH3wftpTVqQNwIA8nn6DRlt3GwVEwbE3M/QLZOvXXBOuumKtSZu7kARz09Dp1XTyRpG8iFVlXjQn5hkjP3BH5aTrtNilDllbmZqFY/ZreKOkj/wDDbfyGSx3WOOegmY5+FeVQyMp+VW4uvQMTnkWOq57Udk1+zN2TWWcPMjeKklCEd8hPIj38jjz0W9qVsaDYmwbjPx/FVFumibiP+7STij/5ZftjVuQ7o2hDsHY927Re5a7SCFKNZXLzMSwT4hhn8HCBI7NywT1JAIV0zoXCWMXzXBA5jiPhqry+OLV98t+HA9L87ffXjTH9Je0zUE+znreVwbblPDWAjxGSPIJY9Sckjn+rql5066sztw3j/p1vie7Qxd3RQRilo1P4jEpYhm92LMceWQOeM6rudNbaQPZC0P3VkcRLQSFN2/wdl9wH61wUf9M/3aHJRnH00ROrw9mY8PKa74H07v8AxXQ7McEfTR/BB/iefaP2XH42P3VuQTh8/wC8dGEsiT9kluROsFwZH+p7xv5MNB6/if8AeOjTblOk3ZPeGYeKG5iRfqViX+ROq8bH7eM8nD8fdWYA61cBzQ3Amu6BNRdxr4qCIDk8zfgT+8+389cVJfK0RhWETn9Yrz/hy0Ljie8XC7Gqr6enk7N516I1pKWrorpFe6W4wUFDUqsVcZJDwtggvG6KcyBuAPwjqfTAOu2s3VTrW11j27X3Ki2rcp4filqEVZnRST4uDiwF4mGATxYBPoK/NRPUsGnlZz5Z6D6Dy0Zdmlju90vkFba6fjNBIKjLQ94pZPGF4cHiHLnnkB18gbXRNjbnlO3kePJB3VL6yfs6RlsxuQdbncn2Rpc2PvNgLWPMKKzbO3BUUIS+7euHClHX04ZO4qo2Ij4w/NSFkfKMMkEEciGIn2dVFkhv5/0gipzBLEyRVVRxulHLkFZzGqt32MEd0w4WLYYgZOjfsQrLRfV3ztuujp6AboKpb+GErSQzAysigZ8OGdCq/sgdcZri7Wqe0VcdPUJIjMmSsgAdXVikilQTjhkR154JABwARqqmAzPicddNfD6hY6+ofMWvcLaeB13HQrr7QHsP6fmi23HELdC0gimjeUiZWld0JEgDKVR0jIOececnOdGFuoItw7atF+3K9Jt/blvpVoDVMrv8SwkkJ4VGWd2YuSF6AE8hz0BWq11N1qpIqaKSQxRmQiOJpCSSFReFeeXkaNB7uNHnaxX0dpsOzdu0FIa237blIr3fiakq6piryKOhZOJZgDyyGbHLmXqRqyJp158dvqUqCWWLPIxtwB4DW1yOPiga27ua4pbrRu+617223QvDQzRwrO1NxdMozLxoCBy4sgKAMgADjnpLtJc6vcV4rIq9pkMcFRHKGSQleDCgfhVUDKFwAuFAGBqL3TZ57TNAzJKKerhWop2kThYo6hlz5ZwQeXLBB89QcddVUuBFKwQEngJypJxnl+Q56tMIcM0R38n3X4rXT1f6SQRVTScmrbHYnj7Q1uOO2ttFOTprhnT21HVl9q2VeBIkIOWIGc+3Py130dXDXwd5HyYcnQ9VP+GqZI3sFyjdJWU9S/Iw6ojv0Qj7KLOyrzkuLMx98Sj+QGgufqPpo13t39Hsfa1vdQFmM1SfXrlf4SaCqj8Q+mi+Bg/pSebnfVcNjrv3rgOCepHG/wC8dG3Zsgqts7topJDwCCKdF/aXjJ+/Co0DfM31OirsnqIYd5GnnBK1tJLT48j0c5/JDqzF489A4jhY/AgqjC5uyrWO6qFvu33q6M3S3qXlhDGsQuBhAMhxn2BBGSeQ5aHafVipCYKiSCdCyhjHNHnHEM4ZT7HQfuCzvZ7kYlLSUsnjppT86e/uOh6fTmNBqOe/qE+5dv6SYW1gFXC3Q6O5X4Hx4nnyuFv29QSXO5Q0UbBO8Pic9EUc2Y/QZOjCz3qt2rBfbKs001PcqB6WN0lMfAGkRi+Of4lRkK8shzzPQjWy2xdgonliLxkAIccfQ8J9sA/Yan9zxqstHNJEzxgkScPLI5HGfI9dWyHNKGO2Q6npmjDnVDNHg6npoLW8blGn9Hzd1BYN109uv6RyWirnRlklfhFHUAgpMCfwjIUNzAIAJzwAaKO3upoUud+tNayPeYr7HWUzRjCCllpEVhgdHBih4uLmeRHInVIRhBIwjZmTPhLLgkeWRk4+51JGeapqJKmpmkmmlcvJJIxZnYnJJJ5kk+emNI0z9sDbTz+Cg7pXloY43A2VrdiktDLJYLRQ90t8qdzLWTtMvFGKOmpmbBByAx7yXgIGeIZJHCp0IduG86fdW4lpbPHFBt+2FordHHFwcecccpzzJcgdccguRnOROo89cEgQyKJGZU4vEVGSB54GRn76kKVom7Y6nz/X9phI7LkB0KmLve7ju02i0TSLT0lBSw04wMqixjh48evMnHqx+ug290U9ur56KpAEsLcLY6H0I9iOeivbECtV1VRGHEYHAnF5gnP35D76gN4S97eZfGX4FVMlgeg6fl0/LSjOWQsbsi9TTtOHtqJCS8mwPQXFreFx49EPTQytA86xsY0IV2A5KTnGfrg/bRBt6zfC2sXGpDrUVX+xQjGIv1j+8cY5dBnz1nZQqWrKpTTCptzRcNZG/wCAgnwf8Wenn10URQ/pC708LAIksqRhUGAiZAwB6Aaz1lQQSzh5088EZ9H8Mh7IVr7k62BHG/eHMW0HtX5BY7WZZIZ9v2aVAGorarMQfmbCkfl3X8dA85yw+miLtNrmr981xEyyxU4SCPHyhVyy/k5fQ3J5aP4TF2dFGDyv8dV57iMva1T3dU75m+p1vtla1su1Hcl4v7PMrsF6lc+IfmMj89aV/E/1OsuoKka2lgkiyHYhZmktfmHAqyNxU6pd5JY8GOfEqkHOc9f451x1duiu9ta3TcIlHipZW/3b+nrwt0PX1xpm1q0XbbcdM3/mrbiIjHWPHhP2GP8AhPrqQhTXBFr4Hlh3aV7bg88WI0AzC4Is4efrwO2oVcolVb614n44KiFirYPNT0PMaMP0HdzSg/pDv2YZeJ2bhP36/mBrRvS2yS11JXQAtJUkQSZ/9QclJJPmuB/wnUxTLd7jWUoqqMUcVPIJJGD542HkMeRyf8dFHTlzWvBA5rl4cKbBUTU0gc7UZbX2PEkaA2te+m6j6GxTR8ct0njoKdEZuNjxs7AEhFC5yxOBzwBnJIAJ0+w1a0F1o656WGrSnnSVoJl4o5QrA8DDzU4wR6HRls3ase9LjuK4XKuNHZ9u0byykdWk4W4V9cEoxJAJwoA5kEazbKW/W74O0UyGpoqX4qOReStCZApUk+fEw6+Z8uZ04qhfK/x5C6HOwyOZz207u7oAT6zj8vDTU6cVzdrFqokui7msETjb17LVFIeDh7mTP9bAwAAUo/FgDI4eHBPXQjJZqmphSehK1MbAcWCFKNgZBBPr9xz89T9jvlVRU0236uVjaqqdXmp5fwJKAVD4PTkcHp0BOeEaJ+1vZSdnG+qCG2zzS2q7JmNZOqNnhZM/MFJVgeuGwc9SjM6IiInXW3UD7rPS09PJlMmzjY23adNeVjflfkq6ls10gt8kz15pxEhcRoxwMDJzjkD9M6HrPaam/XJ6eOdEYIZZZJSeS5GT7nno2qxd7dcalqaiFdBUPxpxMPC2AMN7cunpjnrXYrAlpoxJUMr104DPw8xEvkufMnqfoPqazUljCbi5289Oq6KPA2VFTGwMdkbfPe/Dax2Ob2eCc8FNRUMduoI+Cni5lvmlbzdvf/PoB0bd7umrJrlUErDRwvK7AZxyP92T+WmzJqK3rWi32JbRE2KmuIebBwVjB/vIx7+LQ+OJ1Q8RDdx/so5j9WyhoXHQXFgOnIdLaILeaWqqJqyfHe1EjSyYGBxMST/E61y+WtwAAA1qn6jXfBoa0NC8Tdcm5T1/E/7x07WvPib946zk6TD6oScbErpt1bUWu4R19LzZOTpnAdfNT/nrjVh2uuo7nSrWUbZRjhlPJkbzUjyP+emqzzrbba2qtdZ8VRt+LlJGT4ZB7+/ofL76E4nhoqR2kfeHzR3A8dlwya41adwrRqqA1vwwMnAsFQtQffhBwPudSkKaHNsbjpLlCMnu5ByeNj4kPv6j0P8A3xybsv8A3jPbaGTwDwzSD5v2R7evr9OvNRwyPf2ZFiPkvUX45h7aU1jDcnhxJ4D+Vu3Jc6UVM1NYa2vjpquJBc4u9xDPMjsQQq8mQDgI4sni4iOWNF3Zts6+VlsqNxR01Q1NTJ4cZGFJzxdennjn+tyGDoN2PYhdalqiqDCihPixy7xv1Af5/wDfOvYvZXfNu1Vip7TaFNJNTRjjppSOMnHiYH5hnPTGOXIDA1biFV+nZ2cYvzXI0sMsYOKSR3BNwOG+pPTg3rqdrHzh2rbFvFst9JuGWgaJapC0wBBPL5ivkcYJ+/k2Bi0Xt7zLQ0W47rX1K2unENmhZgYo2Lg4Ynnjh5Dz5IMgKF16r7Vtzbbhtk9jrqf9JVMi57mNgO5boCW58J68sH0IwefkPfFj/RVUJ6ZXNFMfATz4G80J/lny9cHTUFQaiPs5NDwPnzZSqqeU5cUEVgDdw4HXQjjY8euvGwLpk1xzJqG2vuIT8NBcZMSgYimY/jHox9ffz+vVm5tzUlvXu0BllYeCNTzb3PoPfVToJBJ2YFyuvPpBQspP1Wbw435fytt6ulJZ6b4mfxyHlFEDzdv8Pfy1X1TUVFdWy11YwaaU5OOQUeQHsNaqqoqa6rasrZOOVug+VB6KPIf566xk66jDcOFKM7tXH5dF5PjWNy4nMXu24BP1qn6jTsnTJOeNFSUFvdO+Zv3j/PS1j53/AHjrOmZ3Qmf3ilpaWlqSimjvI5lngkaKZDlXXqP8+mpq33KjuE8cVyHw9SWALx8hIPbPQ+WD7fTUPpkkayKQwznWOpo2T6jR3NaqeqdCeY5K/rHNQTUEUdt4Fp4hwrGOqfX39/P31M0by08yTQSPFKjBkdGIZSOhBHTXnmy3+5WadXSWRkXkGHNwPTnyYex1bO0982y5okdZJHTynkJAcRnpyOean2P38tcjVUUtM71xcc17Bg3pPSYgwRyWY7a3Dw5e5FM4LEk5JPUnULuGot8Vvlp7iQ0Uyle7H4m9x7j1+moneG/bfb1eGgkSaTmvfHmoP7I+b+X11VN4vNwvE0jzSOscmeLJ8Tj39B7DT0lDNUu9XQc1DGvSqlomGKKz3HTp/P0+i6qu6xUZaC2BZagjD1B5qn09T/D69NRCqxdpZHaSRjlmY5J1lEVBhQBp2uupqNkGu5O5XkM9S6XTYcktLS0ta1mS1rkOCNbNapuo0inG6efxv+8dLS0tMzuhTduUtLS0tOopaWlpaSSXXrrWA0UvewSNG/mR5/Ueelpai9jXizhcKTHFpuEgpkk72V2kf9ZvL6emtmlpaTWhosAk5xcblLS0tLUlFLS0tLSSS0yXqNLS0ikF/9k=" alt="Valhalla CP">
+  <div class="header-info">
+    <div class="clan-name">VALHALLA CP</div>
+    <div class="clan-tag">NIVEL 19 &nbsp;·&nbsp; [V1A] &nbsp;·&nbsp; ESPAÑOL &nbsp;·&nbsp; MÍN 7M PODER &nbsp;·&nbsp; CVC MÍN 75K</div>
+  </div>
+  <button class="btn-export" onclick="exportarCSV()">⬇ CSV</button>
+</div>
+<div class="stats-bar" id="stats-bar"></div>
+<div class="legend">
+  <span style="font-size:11px;color:var(--text-muted);font-family:'Cinzel',serif;letter-spacing:1px;margin-right:4px;">ESTADO:</span>
+  <span class="legend-item"><span class="dot dot-online"></span>En línea</span>
+  <span class="legend-item"><span class="dot dot-reciente"></span>Reciente</span>
+  <span class="legend-item"><span class="dot dot-inactivo"></span>Inactivo</span>
+</div>
+<div class="controls">
+  <input type="text" id="search" placeholder="Buscar guerrero..." oninput="render()">
+  <select id="f-estado" onchange="render()">
+    <option value="">Todos los estados</option>
+    <option value="online">En línea</option>
+    <option value="reciente">Reciente</option>
+    <option value="inactivo">Inactivo</option>
+  </select>
+  <select id="f-rango" onchange="render()">
+    <option value="">Todos los rangos</option>
+    <option value="Líder">Líder</option>
+    <option value="Veterano">Veterano</option>
+    <option value="Miembro">Miembro</option>
+  </select>
+  <select id="f-orden" onchange="render()">
+    <option value="nombre">Por nombre</option>
+    <option value="xp">Mayor XP</option>
+    <option value="poder">Mayor poder</option>
+    <option value="actividad">Actividad</option>
+    <option value="llegada">Entrada al clan</option>
+  </select>
+  <button class="btn btn-gold" onclick="abrirModal()">+ Reclutar</button>
+</div>
+<div class="table-wrap">
+  <table>
+    <thead><tr>
+      <th class="col-n">Guerrero</th>
+      <th class="col-f">Entrada</th>
+      <th class="col-x">XP Clan</th>
+      <th class="col-p">Poder</th>
+      <th class="col-a">Act.</th>
+      <th class="col-r">Rango</th>
+      <th class="col-w">WA</th>
+      <th class="col-no">Notas</th>
+      <th class="col-ac">Acciones</th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div id="empty-desk" class="empty-msg" style="display:none;">— SIN RESULTADOS —</div>
+</div>
+<div class="mobile-list" id="mobile-list"></div>
+<div id="empty-mob" class="empty-msg" style="display:none;padding:2rem 1rem;">— SIN RESULTADOS —</div>
+
+<!-- MODAL AÑADIR/EDITAR -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">RECLUTAR GUERRERO</div>
+    <div class="field"><label>Nombre en el juego</label><input id="m-nombre" type="text" placeholder="Ej: Warbury" autocomplete="off"></div>
+    <div class="grid-2">
+      <div class="field"><label>Fecha de entrada</label><input id="m-llegada" type="date"></div>
+      <div class="field"><label>Estado / Conexión</label>
+        <select id="m-conexion">
+          <option value="online">En línea</option>
+          <option value="reciente">Reciente (&lt;3d)</option>
+          <option value="inactivo">Inactivo (+3d)</option>
+          <option value="?">Desconocido</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>XP de Clan</label><input id="m-xp" type="number" placeholder="Ej: 38962" min="0" inputmode="numeric"></div>
+      <div class="field"><label>Poder (M)</label><input id="m-poder" type="number" placeholder="Ej: 28.11" step="0.01" min="0" inputmode="decimal"></div>
+    </div>
+    <div class="grid-3">
+      <div class="field"><label>Actividad</label>
+        <select id="m-actividad"><option value="1">★☆☆</option><option value="2" selected>★★☆</option><option value="3">★★★</option></select>
+      </div>
+      <div class="field"><label>Rango</label>
+        <select id="m-rango"><option value="Miembro" selected>Miembro</option><option value="Veterano">Veterano</option><option value="Líder">Líder</option></select>
+      </div>
+      <div class="field"><label>WhatsApp</label>
+        <select id="m-whatsapp"><option value="si">Sí</option><option value="no">No</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Notas</label><textarea id="m-notas" placeholder="Observaciones sobre el miembro..."></textarea></div>
+    <div class="modal-btns">
+      <button class="btn" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-gold" onclick="guardar()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR EXPULSIÓN -->
+<div class="modal-overlay" id="confirm-overlay">
+  <div class="modal confirm-modal">
+    <div class="modal-title" style="color:#e74c3c;">⚔ EXPULSAR</div>
+    <p>¿Seguro que quieres expulsar a <span class="name-hl" id="confirm-name"></span> del clan?</p>
+    <div class="modal-btns" style="justify-content:center;">
+      <button class="btn" onclick="cerrarConfirm()">Cancelar</button>
+      <button class="btn btn-danger" onclick="confirmarExpulsion()">Expulsar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SK='valhalla_cp_v4';
+const DD=[
+  {id:1,nombre:'Warbury',llegada:'2024-09-01',conexion:'online',xp:21217,poder:10.45,actividad:1,rango:'Veterano',whatsapp:'si',notas:''},
+  {id:2,nombre:'SentryK',llegada:'2024-01-15',conexion:'reciente',xp:38962,poder:28.11,actividad:1,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:3,nombre:'**ASRAEL**',llegada:'2024-03-10',conexion:'online',xp:4627,poder:25.4,actividad:2,rango:'Miembro',whatsapp:'no',notas:''},
+  {id:4,nombre:'[V1A]zZzeT@',llegada:'2024-02-20',conexion:'online',xp:34626,poder:24.48,actividad:2,rango:'Veterano',whatsapp:'si',notas:''},
+  {id:5,nombre:'Jmbasulto',llegada:'2023-11-05',conexion:'reciente',xp:41658,poder:22.31,actividad:1,rango:'Líder',whatsapp:'si',notas:''},
+  {id:6,nombre:'Arevol',llegada:'2024-01-08',conexion:'online',xp:15032,poder:21.22,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:7,nombre:'Pukitosllstar',llegada:'2024-04-01',conexion:'reciente',xp:35695,poder:20.7,actividad:1,rango:'Miembro',whatsapp:'no',notas:''},
+  {id:8,nombre:'Yochuta',llegada:'2024-05-12',conexion:'online',xp:12000,poder:18.5,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:9,nombre:'RaulR91',llegada:'2024-06-01',conexion:'reciente',xp:9800,poder:15.0,actividad:1,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:10,nombre:'Darkleto',llegada:'2024-03-22',conexion:'inactivo',xp:3200,poder:12.3,actividad:1,rango:'Miembro',whatsapp:'no',notas:'Sin actividad reciente'},
+  {id:11,nombre:'Arevol.01',llegada:'2024-07-10',conexion:'online',xp:22000,poder:19.8,actividad:3,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:12,nombre:'BillyKnight',llegada:'2024-08-05',conexion:'reciente',xp:17500,poder:17.2,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:13,nombre:'Zidane357',llegada:'2024-02-14',conexion:'inactivo',xp:2100,poder:9.5,actividad:1,rango:'Miembro',whatsapp:'no',notas:'Candidato a expulsión'},
+  {id:14,nombre:'orph@nbutch3r',llegada:'2024-09-15',conexion:'online',xp:31000,poder:23.6,actividad:3,rango:'Veterano',whatsapp:'si',notas:''},
+  {id:15,nombre:'ELPACHORRA',llegada:'2024-01-30',conexion:'reciente',xp:14200,poder:16.7,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:16,nombre:'[V1A]Arectar',llegada:'2023-12-01',conexion:'online',xp:28900,poder:22.0,actividad:3,rango:'Veterano',whatsapp:'si',notas:''},
+  {id:17,nombre:'[V1A] Dtelo',llegada:'2023-10-20',conexion:'online',xp:21217,poder:10.45,actividad:1,rango:'Veterano',whatsapp:'si',notas:''},
+  {id:18,nombre:'PaladinJotah',llegada:'2024-05-05',conexion:'reciente',xp:19300,poder:20.1,actividad:2,rango:'Miembro',whatsapp:'no',notas:''},
+  {id:19,nombre:'[V1A]Joseles',llegada:'2024-04-18',conexion:'online',xp:25600,poder:21.9,actividad:2,rango:'Veterano',whatsapp:'si',notas:''},
+  {id:20,nombre:'[V1A] Kryla',llegada:'2024-06-28',conexion:'online',xp:33400,poder:24.0,actividad:3,rango:'Veterano',whatsapp:'si',notas:''},
+  {id:21,nombre:'PukitoslIstar',llegada:'2024-03-05',conexion:'reciente',xp:11800,poder:14.5,actividad:1,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:22,nombre:'Nygran',llegada:'2024-07-22',conexion:'online',xp:18700,poder:17.8,actividad:2,rango:'Miembro',whatsapp:'no',notas:''},
+  {id:23,nombre:'ASRAEL',llegada:'2024-02-02',conexion:'inactivo',xp:1500,poder:8.0,actividad:1,rango:'Miembro',whatsapp:'no',notas:'Candidato a expulsión'},
+  {id:24,nombre:'Kitxu',llegada:'2024-08-19',conexion:'online',xp:27300,poder:22.8,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:25,nombre:'Verne2099',llegada:'2024-09-10',conexion:'reciente',xp:16100,poder:16.0,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:26,nombre:'Nacheas Haze',llegada:'2024-05-30',conexion:'online',xp:29800,poder:23.1,actividad:3,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:27,nombre:'Cr787',llegada:'2024-07-01',conexion:'inactivo',xp:800,poder:7.2,actividad:1,rango:'Miembro',whatsapp:'no',notas:'Sin actividad'},
+  {id:28,nombre:'Xhennon',llegada:'2024-09-25',conexion:'online',xp:23500,poder:21.5,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:29,nombre:'Sir Zerg',llegada:'2024-10-01',conexion:'reciente',xp:13400,poder:15.9,actividad:2,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:30,nombre:'NecochenseAmor',llegada:'2024-08-28',conexion:'online',xp:30200,poder:23.4,actividad:3,rango:'Miembro',whatsapp:'si',notas:''},
+  {id:31,nombre:'Kaiiin',llegada:'2024-11-05',conexion:'online',xp:19900,poder:18.7,actividad:2,rango:'Miembro',whatsapp:'no',notas:''},
+  {id:32,nombre:'Joard_7',llegada:'2024-10-15',conexion:'reciente',xp:15600,poder:16.3,actividad:1,rango:'Miembro',whatsapp:'si',notas:''},
+];
+function cargar(){try{const r=localStorage.getItem(SK);return r?JSON.parse(r):DD;}catch(e){return DD;}}
+function save(){localStorage.setItem(SK,JSON.stringify(miembros));}
+let miembros=cargar(),nextId=Math.max(...miembros.map(m=>m.id),0)+1,editandoId=null,expulsandoId=null;
+function dot(c){const cls={online:'dot-online',reciente:'dot-reciente',inactivo:'dot-inactivo'};return`<span class="dot ${cls[c]||'dot-unknown'}"></span>`;}
+function rB(r){const cls={'Líder':'b-lider','Veterano':'b-veterano','Miembro':'b-miembro'};return`<span class="badge ${cls[r]||'b-miembro'}">${r}</span>`;}
+function st(n){let s='';for(let i=1;i<=3;i++)s+=i<=n?'<span class="stars">★</span>':'<span class="star-empty">☆</span>';return s;}
+function fF(d){if(!d)return'—';const p=d.split('-');return p.length<3?'—':p[2]+'/'+p[1]+'/'+p[0].slice(2);}
+function fX(x){return x?Number(x).toLocaleString('es-ES'):'—';}
+function fP(p){return p?parseFloat(p).toFixed(2)+'M':'—';}
+function estadoLabel(c){return{online:'En línea',reciente:'Reciente',inactivo:'Inactivo','?':'—'}[c]||'—';}
+function updateStats(){
+  const t=miembros.length,on=miembros.filter(m=>m.conexion==='online').length;
+  const inac=miembros.filter(m=>m.conexion==='inactivo').length;
+  const xT=miembros.reduce((a,m)=>a+(parseInt(m.xp)||0),0);
+  const pT=miembros.reduce((a,m)=>a+(parseFloat(m.poder)||0),0);
+  document.getElementById('stats-bar').innerHTML=`
+    <div class="stat"><span class="stat-val">${t}/30</span><span class="stat-label">Miembros</span></div>
+    <div class="stat"><span class="stat-val success">${on}</span><span class="stat-label">En línea</span></div>
+    <div class="stat"><span class="stat-val${inac>0?' danger':''}">${inac}</span><span class="stat-label">Inactivos</span></div>
+    <div class="stat"><span class="stat-val">${xT.toLocaleString('es-ES')}</span><span class="stat-label">XP Total</span></div>
+    <div class="stat"><span class="stat-val">${Math.round(pT)}M</span><span class="stat-label">Poder</span></div>`;
+}
+function filtrar(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const fe=document.getElementById('f-estado').value,fr=document.getElementById('f-rango').value,ord=document.getElementById('f-orden').value;
+  let l=miembros.filter(m=>{
+    if(q&&!m.nombre.toLowerCase().includes(q))return false;
+    if(fe&&m.conexion!==fe)return false;
+    if(fr&&m.rango!==fr)return false;
+    return true;
+  });
+  l.sort((a,b)=>{
+    if(ord==='xp')return(parseInt(b.xp)||0)-(parseInt(a.xp)||0);
+    if(ord==='poder')return(parseFloat(b.poder)||0)-(parseFloat(a.poder)||0);
+    if(ord==='actividad')return(parseInt(b.actividad)||0)-(parseInt(a.actividad)||0);
+    if(ord==='llegada')return(a.llegada||'').localeCompare(b.llegada||'');
+    return a.nombre.localeCompare(b.nombre);
+  });
+  return l;
+}
+function render(){
+  updateStats();
+  const lista=filtrar(),empty=lista.length===0;
+  document.getElementById('empty-desk').style.display=empty?'block':'none';
+  document.getElementById('empty-mob').style.display=empty?'block':'none';
+  document.getElementById('tbody').innerHTML=empty?'':lista.map(m=>{
+    const rc=m.conexion==='inactivo'?' class="flag-inactive"':'';
+    const wa=m.whatsapp==='si'?'<span class="wa-yes">✓</span>':'<span class="wa-no">✗</span>';
+    return`<tr${rc}>
+      <td><div class="name-cell">${dot(m.conexion)}<span style="overflow:hidden;text-overflow:ellipsis" title="${m.nombre}">${m.nombre}</span></div></td>
+      <td>${fF(m.llegada)}</td>
+      <td>${fX(m.xp)}</td>
+      <td>${fP(m.poder)}</td>
+      <td>${st(parseInt(m.actividad)||1)}</td>
+      <td>${rB(m.rango)}</td>
+      <td style="text-align:center">${wa}</td>
+      <td class="notas-cell" title="${m.notas||''}">${m.notas||''}</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn btn-sm" onclick="abrirModal(${m.id})">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="pedirExpulsion(${m.id})">Expulsar</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('mobile-list').innerHTML=empty?'':lista.map(m=>{
+    const ic=m.conexion==='inactivo'?' inactive':'';
+    const wa=m.whatsapp==='si'?'<span class="wa-yes">✓ WA</span>':'<span class="wa-no">✗ WA</span>';
+    return`<div class="m-card${ic}">
+      <div class="m-card-header">
+        <span class="m-name">${dot(m.conexion)}${m.nombre}</span>
+        <div style="display:flex;gap:6px;align-items:center">${rB(m.rango)} ${wa}</div>
+      </div>
+      <div class="m-card-body">
+        <div class="m-field"><span class="m-field-label">Estado</span><span class="m-field-val">${estadoLabel(m.conexion)}</span></div>
+        <div class="m-field"><span class="m-field-label">Entrada</span><span class="m-field-val">${fF(m.llegada)}</span></div>
+        <div class="m-field"><span class="m-field-label">XP Clan</span><span class="m-field-val">${fX(m.xp)}</span></div>
+        <div class="m-field"><span class="m-field-label">Poder</span><span class="m-field-val">${fP(m.poder)}</span></div>
+        <div class="m-field"><span class="m-field-label">Actividad</span><span class="m-field-val">${st(parseInt(m.actividad)||1)}</span></div>
+        ${m.notas?`<div class="m-field m-notas"><span class="m-field-label">Notas</span><span>${m.notas}</span></div>`:''}
+      </div>
+      <div class="m-card-footer">
+        <button class="btn btn-sm" onclick="abrirModal(${m.id})">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="pedirExpulsion(${m.id})">Expulsar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function abrirModal(id=null){
+  editandoId=id;const m=id?miembros.find(x=>x.id===id):null;
+  document.getElementById('modal-title').textContent=id?'EDITAR GUERRERO':'RECLUTAR GUERRERO';
+  document.getElementById('m-nombre').value=m?m.nombre:'';
+  document.getElementById('m-llegada').value=m?m.llegada:'';
+  document.getElementById('m-conexion').value=m?(m.conexion||'online'):'online';
+  document.getElementById('m-xp').value=m?m.xp:'';
+  document.getElementById('m-poder').value=m?m.poder:'';
+  document.getElementById('m-actividad').value=m?(m.actividad||2):2;
+  document.getElementById('m-rango').value=m?(m.rango||'Miembro'):'Miembro';
+  document.getElementById('m-whatsapp').value=m?(m.whatsapp||'si'):'si';
+  document.getElementById('m-notas').value=m?m.notas:'';
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('m-nombre').focus(),150);
+}
+function cerrarModal(){document.getElementById('modal-overlay').classList.remove('open');editandoId=null;}
+function guardar(){
+  const nombre=document.getElementById('m-nombre').value.trim();
+  if(!nombre){alert('El nombre es obligatorio.');return;}
+  const datos={nombre,llegada:document.getElementById('m-llegada').value,conexion:document.getElementById('m-conexion').value,xp:parseInt(document.getElementById('m-xp').value)||0,poder:parseFloat(document.getElementById('m-poder').value)||0,actividad:parseInt(document.getElementById('m-actividad').value)||1,rango:document.getElementById('m-rango').value,whatsapp:document.getElementById('m-whatsapp').value,notas:document.getElementById('m-notas').value.trim()};
+  if(editandoId){const idx=miembros.findIndex(m=>m.id===editandoId);if(idx>=0)miembros[idx]={...miembros[idx],...datos};}
+  else{if(miembros.length>=30){alert('El clan está lleno (30/30).');return;}miembros.push({id:nextId++,...datos});}
+  save();cerrarModal();render();
+}
+function pedirExpulsion(id){expulsandoId=id;const m=miembros.find(x=>x.id===id);document.getElementById('confirm-name').textContent=m?m.nombre:'';document.getElementById('confirm-overlay').classList.add('open');}
+function cerrarConfirm(){document.getElementById('confirm-overlay').classList.remove('open');expulsandoId=null;}
+function confirmarExpulsion(){if(expulsandoId!==null){miembros=miembros.filter(m=>m.id!==expulsandoId);save();cerrarConfirm();render();}}
+function exportarCSV(){
+  const h=['Nombre','Entrada','Estado','XP Clan','Poder (M)','Actividad','Rango','WhatsApp','Notas'];
+  const rows=miembros.map(m=>[m.nombre,m.llegada||'',m.conexion,m.xp||0,m.poder||0,m.actividad||1,m.rango,m.whatsapp,m.notas||'']);
+  const csv=[h,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));a.download='VALHALLA_CP_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarModal();cerrarConfirm();}});
+document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target.id==='modal-overlay')cerrarModal();});
+document.getElementById('confirm-overlay').addEventListener('click',e=>{if(e.target.id==='confirm-overlay')cerrarConfirm();});
+render();
+</script>
+</body>
+</html>
