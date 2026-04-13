@@ -551,7 +551,6 @@ function abrirModal(id=null){
   document.getElementById("m-nombre").value=m?m.nombre:"";
   document.getElementById("m-llegada").value=m?m.llegada:"";
   document.getElementById("m-conexion").value=m?(m.conexion||"online"):"online";
-  document.getElementById("m-xp").value=m?m.xp:"";
   document.getElementById("m-poder").value=m?m.poder:"";
   document.getElementById("m-actividad").value=m?(m.actividad||2):2;
   document.getElementById("m-rango").value=m?(m.rango||"Miembro"):"Miembro";
@@ -573,7 +572,7 @@ async function guardar(){
   if(!nombre){alert("El nombre es obligatorio.");return;}
   const coleccion = modoAliado ? ACOL : COL;
 const id = editandoId || (modoAliado?"a":"") + Date.now().toString();
-  const datos={id,nombre,llegada:document.getElementById("m-llegada").value,conexion:document.getElementById("m-conexion").value,xp:parseInt(document.getElementById("m-xp").value)||0,poder:parseFloat(document.getElementById("m-poder").value)||0,actividad:parseInt(document.getElementById("m-actividad").value)||1,rango:document.getElementById("m-rango").value,whatsapp:document.getElementById("m-whatsapp").value,notas:document.getElementById("m-notas").value.trim(),boss:parseInt(document.getElementById("m-boss").value)||0,hydra:parseInt(document.getElementById("m-hydra").value)||0,quimera:parseInt(document.getElementById("m-quimera").value)||0};
+  const datos={id,nombre,llegada:document.getElementById("m-llegada").value,conexion:document.getElementById("m-conexion").value,poder:parseFloat(document.getElementById("m-poder").value)||0,actividad:parseInt(document.getElementById("m-actividad").value)||1,rango:document.getElementById("m-rango").value,whatsapp:document.getElementById("m-whatsapp").value,notas:document.getElementById("m-notas").value.trim(),boss:parseInt(document.getElementById("m-boss").value)||0,hydra:parseInt(document.getElementById("m-hydra").value)||0,quimera:parseInt(document.getElementById("m-quimera").value)||0};
   if(!editandoId && !modoAliado && miembros.length>=30){alert("El clan está lleno (30/30).");return;}
   try{
     syncBar("⚔ Guardando...", "loading");
