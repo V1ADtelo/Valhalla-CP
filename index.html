@@ -301,9 +301,9 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
       </select>
     </div>
     <div class="grid-3">
-      <div class="field"><label>👹 Clan Boss</label><input id="dmg-boss" type="number" placeholder="Daño" min="0" inputmode="numeric"></div>
-      <div class="field"><label>🐉 Hydra</label><input id="dmg-hydra" type="number" placeholder="Daño" min="0" inputmode="numeric"></div>
-      <div class="field"><label>🔥 Quimera</label><input id="dmg-quimera" type="number" placeholder="Daño" min="0" inputmode="numeric"></div>
+      <div class="field"><label>👹 Clan Boss</label><input id="dmg-boss" type="text" placeholder="Ej: 3,65M"></div>
+      <div class="field"><label>🐉 Hydra</label><input id="dmg-hydra" type="text" placeholder="Ej: 2,1M"></div>
+      <div class="field"><label>🔥 Quimera</label><input id="dmg-quimera" type="text" placeholder="Ej: 1,8M"></div>
     </div>
     <div class="modal-btns">
       <button class="btn" onclick="cerrarDamage()">Cancelar</button>
@@ -338,9 +338,9 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
       </div>
     </div>
     <div class="grid-3">
-      <div class="field"><label>👹 Clan Boss</label><input id="m-boss" type="number" placeholder="Ej: 5000000" min="0" inputmode="numeric"></div>
-      <div class="field"><label>🐉 Hydra</label><input id="m-hydra" type="number" placeholder="Ej: 3000000" min="0" inputmode="numeric"></div>
-      <div class="field"><label>🔥 Quimera</label><input id="m-quimera" type="number" placeholder="Ej: 2000000" min="0" inputmode="numeric"></div>
+      <div class="field"><label>👹 Clan Boss</label><input id="m-boss" type="text" placeholder="Ej: 3,65M"></div>
+      <div class="field"><label>🐉 Hydra</label><input id="m-hydra" type="text" placeholder="Ej: 2,1M"></div>
+      <div class="field"><label>🔥 Quimera</label><input id="m-quimera" type="text" placeholder="Ej: 1,8M"></div>
     </div>
     <div class="field"><label>Notas</label><textarea id="m-notas" placeholder="Observaciones sobre el miembro..."></textarea></div>
     <div class="modal-btns">
@@ -437,9 +437,9 @@ function getLogros(m, miembros){
   const logros = [];
   const dias = m.llegada ? Math.floor((new Date()-new Date(m.llegada))/(1000*60*60*24)) : 0;
   const topPoder = [...miembros].filter(x=>(x.poder||0)>0).sort((a,b)=>(b.poder||0)-(a.poder||0))[0];
-  const topBoss = [...miembros].filter(x=>(x.boss||0)>0).sort((a,b)=>(b.boss||0)-(a.boss||0))[0];
-  const topHydra = [...miembros].filter(x=>(x.hydra||0)>0).sort((a,b)=>(b.hydra||0)-(a.hydra||0))[0];
-  const topQuimera = [...miembros].filter(x=>(x.quimera||0)>0).sort((a,b)=>(b.quimera||0)-(a.quimera||0))[0];
+  const topBoss = [...miembros].filter(x=>parseDmg(x.boss)>0).sort((a,b)=>parseDmg(b.boss)-parseDmg(a.boss))[0];
+  const topHydra = [...miembros].filter(x=>parseDmg(x.hydra)>0).sort((a,b)=>parseDmg(b.hydra)-parseDmg(a.hydra))[0];
+  const topQuimera = [...miembros].filter(x=>parseDmg(x.quimera)>0).sort((a,b)=>parseDmg(b.quimera)-parseDmg(a.quimera))[0];
   if(topPoder && m.id === topPoder.id) logros.push({icon:"🐲", title:"Leyenda", desc:"Mayor poder del clan"});
   if(topBoss && m.id === topBoss.id) logros.push({icon:"👹", title:"Azote del Boss", desc:"Mayor daño en Clan Boss"});
   if(topHydra && m.id === topHydra.id) logros.push({icon:"🐉", title:"Cazador de Hydra", desc:"Mayor daño en Hydra"});
@@ -572,7 +572,7 @@ async function guardar(){
   if(!nombre){alert("El nombre es obligatorio.");return;}
   const coleccion = modoAliado ? ACOL : COL;
 const id = editandoId || (modoAliado?"a":"") + Date.now().toString();
-  const datos={id,nombre,llegada:document.getElementById("m-llegada").value,conexion:document.getElementById("m-conexion").value,poder:parseFloat(document.getElementById("m-poder").value)||0,actividad:parseInt(document.getElementById("m-actividad").value)||1,rango:document.getElementById("m-rango").value,whatsapp:document.getElementById("m-whatsapp").value,notas:document.getElementById("m-notas").value.trim(),boss:parseInt(document.getElementById("m-boss").value)||0,hydra:parseInt(document.getElementById("m-hydra").value)||0,quimera:parseInt(document.getElementById("m-quimera").value)||0};
+  const datos={id,nombre,llegada:document.getElementById("m-llegada").value,conexion:document.getElementById("m-conexion").value,poder:parseFloat(document.getElementById("m-poder").value)||0,actividad:parseInt(document.getElementById("m-actividad").value)||1,rango:document.getElementById("m-rango").value,whatsapp:document.getElementById("m-whatsapp").value,notas:document.getElementById("m-notas").value.trim(),boss:document.getElementById("m-boss").value.trim(),hydra:document.getElementById("m-hydra").value.trim(),quimera:document.getElementById("m-quimera").value.trim()};
   if(!editandoId && !modoAliado && miembros.length>=30){alert("El clan está lleno (30/30).");return;}
   try{
     syncBar("⚔ Guardando...", "loading");
@@ -696,11 +696,18 @@ window.setHofTab = function(tab){
   renderHoF();
 };
 
-function fDmg(n){ if(!n||n===0)return"—"; if(n>=1000000)return(n/1000000).toFixed(2)+"M"; if(n>=1000)return(n/1000).toFixed(0)+"K"; return n.toString(); }
+function parseDmg(s){
+  if(!s||s===0||s==="") return 0;
+  const str = String(s).trim().toUpperCase().replace(",",".");
+  if(str.endsWith("M")) return parseFloat(str)*1000000;
+  if(str.endsWith("K")) return parseFloat(str)*1000;
+  return parseFloat(str)||0;
+}
+function fDmg(n){ if(!n||n===""||n===0)return"—"; return String(n); }
 
 function renderHoF(){
   const campo = hofTab;
-  const sorted = [...miembros].filter(m=>(m[campo]||0)>0).sort((a,b)=>(b[campo]||0)-(a[campo]||0));
+  const sorted = [...miembros].filter(m=>parseDmg(m[campo])>0).sort((a,b)=>parseDmg(b[campo])-parseDmg(a[campo]));
   const medals = ["🥇","🥈","🥉"];
   const colors = ["#C8A84B","#b0b8c8","#cd7f32"];
   const heights = ["120px","90px","70px"];
@@ -931,9 +938,9 @@ window.cerrarDamage = function(){ document.getElementById("damage-overlay").clas
 window.guardarDamage = async function(){
   const id = document.getElementById("dmg-nombre").value;
   if(!id){ alert("Selecciona tu personaje."); return; }
-  const boss = parseInt(document.getElementById("dmg-boss").value)||0;
-  const hydra = parseInt(document.getElementById("dmg-hydra").value)||0;
-  const quimera = parseInt(document.getElementById("dmg-quimera").value)||0;
+  const boss = document.getElementById("dmg-boss").value.trim();
+  const hydra = document.getElementById("dmg-hydra").value.trim();
+  const quimera = document.getElementById("dmg-quimera").value.trim();
   const m = miembros.find(x=>x.id===id);
   if(!m){ alert("Miembro no encontrado."); return; }
   const datos = {...m, boss, hydra, quimera};
