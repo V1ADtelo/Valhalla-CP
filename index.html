@@ -69,6 +69,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
 .m-notas{grid-column:1/-1;font-size:12px;color:var(--text-muted);font-style:italic;}
 .badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-family:"Cinzel",serif;letter-spacing:0.5px;font-weight:600;}
 .b-lider{background:rgba(200,168,75,0.15);color:var(--gold);border:1px solid rgba(200,168,75,0.35);}
+.b-lugarteniente{background:rgba(220,100,20,0.15);color:#f97316;border:1px solid rgba(220,100,20,0.35);}
 .b-veterano{background:rgba(100,80,160,0.15);color:#a78bfa;border:1px solid rgba(100,80,160,0.3);}
 .b-miembro{background:rgba(40,50,70,0.5);color:var(--text-secondary);border:1px solid var(--border);}
 .stars{color:var(--gold);font-size:12px;}.star-empty{color:var(--text-muted);font-size:12px;}
@@ -202,6 +203,13 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
 </div>
 <div id="sync-bar" class="sync-bar"></div>
 <div class="stats-bar" id="stats-bar" class="app-section"></div>
+
+<!-- DASHBOARD SALUD DEL CLAN -->
+<div id="dashboard-clan" class="app-section" style="padding:0.75rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.1);">
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;" id="dashboard-cards"></div>
+  <div id="dashboard-alertas" style="margin-top:8px;"></div>
+</div>
+
 <div class="legend app-section">
   <span style="font-size:11px;color:var(--text-muted);font-family:Cinzel,serif;letter-spacing:1px;margin-right:4px;">ESTADO:</span>
   <span class="legend-item"><span class="dot dot-online"></span>Activo</span>
@@ -217,6 +225,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
   <select id="f-rango" onchange="render()">
     <option value="">Todos los rangos</option>
     <option value="Líder">Líder</option>
+    <option value="Lugarteniente">Lugarteniente</option>
     <option value="Veterano">Veterano</option>
     <option value="Miembro">Miembro</option>
   </select>
@@ -347,6 +356,34 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
   </div>
   <div id="pity-tracker-content" style="display:none;">
     <div id="pity-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;"></div>
+    
+    <div style="margin-top:1.25rem;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;">
+      <div style="font-family:Cinzel,serif;font-size:12px;color:var(--gold);letter-spacing:2px;margin-bottom:12px;">🎲 CALCULADORA DE PROBABILIDAD</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div>
+          <label style="font-size:10px;color:var(--text-muted);font-family:Cinzel,serif;letter-spacing:1px;display:block;margin-bottom:4px;">TIPO DE FRAGMENTO</label>
+          <select id="calc-shard" onchange="window.calcularProbabilidad()" style="width:100%;background:var(--bg-mid);border:1px solid var(--border);color:var(--text-primary);padding:7px 10px;border-radius:4px;font-family:Crimson Pro,serif;font-size:13px;outline:none;">
+            <option value="antiguo_leg">Antiguo — Legendario</option>
+            <option value="antiguo_epi">Antiguo — Épico</option>
+            <option value="vacio_leg">Vacío — Legendario</option>
+            <option value="vacio_epi">Vacío — Épico</option>
+            <option value="sagrado_leg">Sagrado — Legendario</option>
+            <option value="primordial_leg">Primordial — Legendario</option>
+            <option value="primordial_myt">Primordial — Mítico</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:10px;color:var(--text-muted);font-family:Cinzel,serif;letter-spacing:1px;display:block;margin-bottom:4px;">APERTURAS ACTUALES</label>
+          <input id="calc-current" type="number" min="0" value="0" oninput="window.calcularProbabilidad()" style="width:100%;background:var(--bg-mid);border:1px solid var(--border);color:var(--text-primary);padding:7px 10px;border-radius:4px;font-family:Crimson Pro,serif;font-size:13px;outline:none;">
+        </div>
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--text-muted);font-family:Cinzel,serif;letter-spacing:1px;display:block;margin-bottom:4px;">¿CUÁNTOS FRAGMENTOS PLANEAS ABRIR?</label>
+        <input id="calc-planned" type="number" min="1" value="10" oninput="window.calcularProbabilidad()" style="width:100%;background:var(--bg-mid);border:1px solid var(--border);color:var(--text-primary);padding:7px 10px;border-radius:4px;font-family:Crimson Pro,serif;font-size:13px;outline:none;">
+      </div>
+      <div id="calc-result" style="margin-top:12px;padding:12px;background:rgba(0,0,0,0.2);border-radius:6px;font-size:13px;color:var(--text-primary);line-height:1.7;"></div>
+    </div>
+
     <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn btn-gold" onclick="window.guardarPity()" style="font-size:11px;">💾 Guardar progreso</button>
       <button class="btn" onclick="window.resetPityAll()" style="font-size:11px;border-color:rgba(192,57,43,0.4);color:#e74c3c;">↺ Resetear todo</button>
@@ -485,7 +522,7 @@ function renderLogrosBadges(m, miembros){
 }
 
 function dot(c){const cls={online:"dot-online",reciente:"dot-online",inactivo:"dot-inactivo"};return`<span class="dot ${cls[c]||"dot-online"}"></span>`;}
-function rB(r){const cls={"Líder":"b-lider","Veterano":"b-veterano","Miembro":"b-miembro"};return`<span class="badge ${cls[r]||"b-miembro"}">${r}</span>`;}
+function rB(r){const cls={"Líder":"b-lider","Lugarteniente":"b-lugarteniente","Veterano":"b-veterano","Miembro":"b-miembro"};return`<span class="badge ${cls[r]||"b-miembro"}">${r}</span>`;}
 function st(n){let s="";for(let i=1;i<=3;i++)s+=i<=n?"<span class='stars'>★</span>":"<span class='star-empty'>☆</span>";return s;}
 function fD(d){if(!d)return"—";const hoy=new Date();const ent=new Date(d);if(isNaN(ent))return"—";const diff=Math.floor((hoy-ent)/(1000*60*60*24));return diff>=0?diff+"d":"—";}
 function fF(d){if(!d)return"—";const p=d.split("-");return p.length<3?"—":p[2]+"/"+p[1]+"/"+p[0].slice(2);}
@@ -701,174 +738,41 @@ function iniciarFirebase(){
   if(firebaseIniciado) return;
   firebaseIniciado = true;
   syncBar("⚔ Conectando con la nube...", "loading");
-  
-  // Timeout si Firebase no responde en 10 segundos
-  let firebaseConectado = false;
-  const timeoutFirebase = setTimeout(()=>{
-    if(!firebaseConectado){
-      syncBar("✗ Error de conexión — recarga la página", "err");
-    }
-  }, 10000);
 
+  let conectado = false;
+  const timeout = setTimeout(()=>{
+    if(!conectado) syncBar("✗ Error de conexión — recarga la página", "err");
+  }, 15000);
+
+  // Miembros
   onSnapshot(collection(db, COL), (snapshot) => {
-    firebaseConectado = true;
-    clearTimeout(timeoutFirebase);
+    conectado = true;
+    clearTimeout(timeout);
     miembros = snapshot.docs.map(d => d.data());
     render();
     renderHoF();
+    renderDashboard();
     poblarSelectPity();
     syncBar("✓ Sincronizado", "ok");
     setTimeout(()=>{ if(rolActual) aplicarPermisosTabla(); }, 50);
   }, (error) => {
-    firebaseConectado = true;
-    clearTimeout(timeoutFirebase);
+    conectado = true;
+    clearTimeout(timeout);
     console.error("Firebase error:", error);
     syncBar("✗ Error Firebase: " + error.code, "err");
   });
 
-  // Escuchar aliados en tiempo real
-onSnapshot(collection(db, ACOL), async (snapshot) => {
-  if(snapshot.empty){
-    aliados = [];
-  } else {
+  // Aliados
+  onSnapshot(collection(db, ACOL), (snapshot) => {
     aliados = snapshot.docs.map(d => d.data());
-  }
-  renderAliados();
-}, (error) => { console.log("Aliados error:", error); });
+    renderAliados();
+  }, (error) => { console.log("Aliados error:", error); });
 
-
-// ============ HALL OF FAME ============
-let hofTab = "boss";
-window.setHofTab = function(tab){
-  hofTab = tab;
-  ["boss","hydra","quimera"].forEach(t=>{
-    const btn = document.getElementById("tab-"+t);
-    if(btn){ btn.className = t===tab?"btn btn-gold":"btn"; }
-  });
-  renderHoF();
-};
-
-function parseDmg(s){
-  if(!s||s===0||s==="") return 0;
-  const str = String(s).trim().toUpperCase().replace(",",".");
-  if(str.endsWith("M")) return parseFloat(str)*1000000;
-  if(str.endsWith("K")) return parseFloat(str)*1000;
-  return parseFloat(str)||0;
-}
-function fDmg(n){ if(!n||n===""||n===0)return"—"; return String(n); }
-
-function renderHoF(){
-  const campo = hofTab;
-  const sorted = [...miembros].filter(m=>parseDmg(m[campo])>0).sort((a,b)=>parseDmg(b[campo])-parseDmg(a[campo]));
-  const medals = ["🥇","🥈","🥉"];
-  const colors = ["#C8A84B","#b0b8c8","#cd7f32"];
-  const heights = ["120px","90px","70px"];
-  const order = [1,0,2]; // silver, gold, bronze visual order
-
-  const podioEl = document.getElementById("hof-podio");
-  if(sorted.length === 0){
-    podioEl.innerHTML = "<p style=\"color:var(--text-muted);font-family:Cinzel,serif;font-size:12px;letter-spacing:2px;text-align:center;width:100%\">— SIN DATOS AÚN —</p>";
-    document.getElementById("hof-ranking").innerHTML="";
-    return;
-  }
-
-  const top3 = order.map(i=>sorted[i]).filter(Boolean);
-  podioEl.innerHTML = top3.map((m,vi)=>{
-    const realIdx = order[vi];
-    const col = colors[realIdx];
-    const h = heights[realIdx];
-    const med = medals[realIdx];
-    return`<div style="text-align:center;flex:1;min-width:100px;max-width:160px;">
-      <div style="font-size:11px;font-family:Cinzel,serif;color:${col};margin-bottom:4px;letter-spacing:1px;">${med}</div>
-      <div style="font-size:13px;font-family:Cinzel,serif;color:var(--text-primary);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${m.nombre}">${m.nombre}</div>
-      <div style="font-size:11px;color:${col};font-family:Cinzel,serif;margin-bottom:8px;">${fDmg(m[campo])}</div>
-      <div style="background:${col}22;border:1px solid ${col}55;border-radius:4px 4px 0 0;height:${h};display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;">
-        <span style="font-size:28px;">${med}</span>
-      </div>
-    </div>`;
-  }).join("");
-
-  // Full ranking table
-  const rankHtml = `<table style="width:100%;border-collapse:collapse;font-size:13px;">
-    <thead><tr>
-      <th style="font-family:Cinzel,serif;font-size:10px;color:var(--gold-dim);letter-spacing:2px;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;background:var(--bg-mid);">#</th>
-      <th style="font-family:Cinzel,serif;font-size:10px;color:var(--gold-dim);letter-spacing:2px;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;background:var(--bg-mid);">Guerrero</th>
-      <th style="font-family:Cinzel,serif;font-size:10px;color:var(--gold-dim);letter-spacing:2px;padding:8px 10px;border-bottom:1px solid var(--border);text-align:right;background:var(--bg-mid);">Daño</th>
-    </tr></thead>
-    <tbody>${sorted.map((m,i)=>`<tr style="border-bottom:1px solid rgba(200,168,75,0.06)">
-      <td style="padding:8px 10px;color:${i<3?colors[i]:'var(--text-muted)'};font-family:Cinzel,serif;font-weight:600;">${i<3?medals[i]:i+1}</td>
-      <td style="padding:8px 10px;font-weight:500;">${m.nombre}</td>
-      <td style="padding:8px 10px;text-align:right;color:var(--gold);">${fDmg(m[campo])}</td>
-    </tr>`).join("")}</tbody>
-  </table>`;
-  document.getElementById("hof-ranking").innerHTML = rankHtml;
-}
-
-// ============ MURO DEL CLAN ============
-const MCOL = "muro";
-const PITY_COL = "pity";
-let mensajes = [];
-
-window.abrirMuro = function(){
-  document.getElementById("muro-titulo").value="";
-  document.getElementById("muro-texto").value="";
-  document.getElementById("muro-tipo").value="general";
-  document.getElementById("muro-overlay").classList.add("open");
-  setTimeout(()=>document.getElementById("muro-titulo").focus(),150);
-};
-window.cerrarMuro = function(){ document.getElementById("muro-overlay").classList.remove("open"); };
-
-window.guardarMuro = async function(){
-  const titulo = document.getElementById("muro-titulo").value.trim();
-  const texto = document.getElementById("muro-texto").value.trim();
-  if(!titulo||!texto){ alert("El título y el mensaje son obligatorios."); return; }
-  const id = Date.now().toString();
-  const datos = { id, titulo, texto, tipo: document.getElementById("muro-tipo").value, fecha: new Date().toISOString() };
-  try{
-    syncBar("⚔ Publicando anuncio...", "loading");
-    await setDoc(doc(db, MCOL, id), datos);
-    syncBar("✓ Anuncio publicado", "ok");
-    cerrarMuro();
-  } catch(e){ syncBar("✗ Error: "+e.message, "err"); }
-};
-
-window.borrarMensaje = async function(id){
-  if(!confirm("¿Eliminar este anuncio?")) return;
-  try{ await deleteDoc(doc(db, MCOL, id)); } catch(e){ syncBar("✗ Error: "+e.message,"err"); }
-};
-
-function renderMuro(){
-  const el = document.getElementById("muro-mensajes");
-  const empty = document.getElementById("muro-empty");
-  if(mensajes.length===0){ el.innerHTML=""; empty.style.display="block"; return; }
-  empty.style.display="none";
-  const tipoColors = {aviso:"#f39c12",cvc:"#e74c3c",logro:"#C8A84B",norma:"#a78bfa",general:"#27c98f"};
-  const tipoLabels = {aviso:"⚠ Aviso",cvc:"⚔ CvC",logro:"🏆 Logro",norma:"📜 Norma",general:"📢 General"};
-  const sorted = [...mensajes].sort((a,b)=>b.fecha.localeCompare(a.fecha));
-  el.innerHTML = sorted.map(m=>{
-    const col = tipoColors[m.tipo]||"var(--gold)";
-    const lbl = tipoLabels[m.tipo]||"📢 General";
-    const fecha = new Date(m.fecha).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"});
-    return`<div style="background:var(--bg-card);border:1px solid ${col}44;border-left:3px solid ${col};border-radius:6px;padding:14px 16px;margin-bottom:10px;position:relative;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
-        <span style="font-size:10px;font-family:Cinzel,serif;color:${col};letter-spacing:1px;">${lbl}</span>
-        <span style="font-size:10px;color:var(--text-muted);margin-left:auto;">${fecha}</span>
-        <button onclick="window.borrarMensaje('${m.id}')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;padding:0 4px;" title="Eliminar">✕</button>
-      </div>
-      <div style="font-family:Cinzel,serif;font-size:13px;color:var(--text-primary);margin-bottom:6px;letter-spacing:1px;">${m.titulo}</div>
-      <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">${m.texto}</div>
-    </div>`;
-  }).join("");
-}
-
-// Escuchar muro en tiempo real
-onSnapshot(collection(db, MCOL), (snapshot) => {
-  mensajes = snapshot.docs.map(d=>d.data());
-  renderMuro();
-}, (error) => { console.log("Muro error:", error); });
-
-
-  
+  // Muro
+  onSnapshot(collection(db, MCOL), (snapshot) => {
+    mensajes = snapshot.docs.map(d => d.data());
+    renderMuro();
+  }, (error) => { console.log("Muro error:", error); });
 }
 
 function mostrarApp(){
@@ -1249,6 +1153,174 @@ card.addEventListener("mouseenter", () => clearTimeout(profileTimeout));
 card.addEventListener("mouseleave", () => {
   profileTimeout = setTimeout(hideProfileCard, 200);
 });
+
+
+// ============ DASHBOARD AUTOMÁTICO ============
+function renderDashboard() {
+  const cardsEl = document.getElementById("dashboard-cards");
+  const alertasEl = document.getElementById("dashboard-alertas");
+  if(!cardsEl || !alertasEl) return;
+
+  const total = miembros.length;
+  const activos = miembros.filter(m => m.conexion !== "inactivo").length;
+  const inactivos = miembros.filter(m => m.conexion === "inactivo").length;
+  const pctActivos = total > 0 ? Math.round((activos/total)*100) : 0;
+  const poderTotal = miembros.reduce((a,m) => a+(parseFloat(m.poder)||0), 0);
+  const conWA = miembros.filter(m => m.whatsapp === "si").length;
+  
+  // Boss coverage
+  const conBoss = miembros.filter(m => m.boss && m.boss !== "").length;
+  const conHydra = miembros.filter(m => m.hydra && m.hydra !== "").length;
+  const conQuimera = miembros.filter(m => m.quimera && m.quimera !== "").length;
+
+  const statColor = (val, warn, danger) => val <= danger ? "#e74c3c" : val <= warn ? "#f39c12" : "#27c98f";
+
+  cardsEl.innerHTML = [
+    { label: "Salud del clan", val: pctActivos+"%", color: statColor(pctActivos, 70, 50), sub: `${activos} activos / ${inactivos} inactivos` },
+    { label: "Poder total", val: Math.round(poderTotal)+"M", color: "var(--gold)", sub: `${total} guerreros` },
+    { label: "WhatsApp", val: conWA+"/"+total, color: conWA===total?"#27c98f":"#f39c12", sub: `${total-conWA} sin grupo` },
+    { label: "Datos Boss", val: conBoss+"/"+total, color: statColor(Math.round(conBoss/total*100),70,40), sub: "Clan Boss registrado" },
+    { label: "Datos Hydra", val: conHydra+"/"+total, color: statColor(Math.round(conHydra/total*100),70,40), sub: "Hydra registrada" },
+    { label: "Datos Quimera", val: conQuimera+"/"+total, color: statColor(Math.round(conQuimera/total*100),70,40), sub: "Quimera registrada" },
+  ].map(c => `
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;">
+      <span style="font-size:9px;color:var(--text-muted);font-family:Cinzel,serif;letter-spacing:1px;text-transform:uppercase;">${c.label}</span>
+      <span style="font-size:18px;font-weight:600;font-family:Cinzel,serif;color:${c.color};">${c.val}</span>
+      <span style="font-size:10px;color:var(--text-muted);">${c.sub}</span>
+    </div>`).join("");
+
+  // Alertas automáticas
+  const alertas = [];
+  if(inactivos > 0) {
+    const nombres = miembros.filter(m=>m.conexion==="inactivo").map(m=>m.nombre).join(", ");
+    alertas.push({ tipo: "danger", msg: `⚠ ${inactivos} guerrero${inactivos>1?"s":""} inactivo${inactivos>1?"s":""}: ${nombres}` });
+  }
+  if(conWA < total) {
+    const nombres = miembros.filter(m=>m.whatsapp!=="si").map(m=>m.nombre).join(", ");
+    alertas.push({ tipo: "warn", msg: `📱 Sin WhatsApp: ${nombres}` });
+  }
+  const sinDatos = miembros.filter(m=>(!m.boss||m.boss==="")&&(!m.hydra||m.hydra==="")&&(!m.quimera||m.quimera===""));
+  if(sinDatos.length > 0) {
+    alertas.push({ tipo: "warn", msg: `📊 Sin daños registrados (${sinDatos.length}): ${sinDatos.map(m=>m.nombre).join(", ")}` });
+  }
+
+  if(alertas.length === 0) {
+    alertasEl.innerHTML = '<div style="font-size:11px;color:#27c98f;font-family:Cinzel,serif;letter-spacing:1px;padding:4px 0;">✓ Todo en orden — el clan está en forma</div>';
+  } else {
+    alertasEl.innerHTML = alertas.map(a => `
+      <div style="font-size:11px;padding:5px 10px;border-radius:4px;margin-top:4px;
+        background:${a.tipo==="danger"?"rgba(192,57,43,0.1)":"rgba(230,126,34,0.1)"};
+        color:${a.tipo==="danger"?"#e74c3c":"#f39c12"};
+        border-left:2px solid ${a.tipo==="danger"?"#e74c3c":"#f39c12"};">
+        ${a.msg}
+      </div>`).join("");
+  }
+}
+
+
+// ============ CALCULADORA DE PIEDAD ============
+const CALC_SHARDS = {
+  "antiguo_leg":    { base: 0.5, mercyAt: 200, mercyInc: 0.5, name: "Antiguo — Legendario" },
+  "antiguo_epi":    { base: 8.0, mercyAt: 20,  mercyInc: 2.0, name: "Antiguo — Épico" },
+  "vacio_leg":      { base: 0.5, mercyAt: 200, mercyInc: 0.5, name: "Vacío — Legendario" },
+  "vacio_epi":      { base: 8.0, mercyAt: 20,  mercyInc: 2.0, name: "Vacío — Épico" },
+  "sagrado_leg":    { base: 6.0, mercyAt: 12,  mercyInc: 2.0, name: "Sagrado — Legendario" },
+  "primordial_leg": { base: 2.0, mercyAt: 75,  mercyInc: 1.0, name: "Primordial — Legendario" },
+  "primordial_myt": { base: 0.5, mercyAt: 200, mercyInc: 10.0, name: "Primordial — Mítico" },
+};
+
+window.calcularProbabilidad = function() {
+  const shardKey = document.getElementById("calc-shard")?.value;
+  const current = parseInt(document.getElementById("calc-current")?.value) || 0;
+  const planned = parseInt(document.getElementById("calc-planned")?.value) || 1;
+  const resultEl = document.getElementById("calc-result");
+  if(!resultEl || !shardKey) return;
+
+  const s = CALC_SHARDS[shardKey];
+  if(!s) return;
+
+  // Calculate probability of getting AT LEAST ONE in 'planned' pulls
+  // starting from 'current' pulls already done
+  let probNone = 1.0;
+  for(let i = 0; i < planned; i++) {
+    const pullNum = current + i;
+    let chance;
+    if(!s.mercyAt || pullNum < s.mercyAt) {
+      chance = s.base;
+    } else {
+      chance = s.base + (pullNum - s.mercyAt) * s.mercyInc;
+    }
+    chance = Math.min(chance, 100);
+    probNone *= (1 - chance/100);
+  }
+  const probAtLeastOne = ((1 - probNone) * 100);
+  const currentChance = !s.mercyAt || current < s.mercyAt
+    ? s.base
+    : Math.min(s.base + (current - s.mercyAt) * s.mercyInc, 100);
+  const mercyActive = s.mercyAt && current >= s.mercyAt;
+
+  const color = probAtLeastOne >= 80 ? "#27c98f" : probAtLeastOne >= 40 ? "#f39c12" : "#e74c3c";
+
+  resultEl.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <span style="color:var(--text-muted);font-size:11px;font-family:Cinzel,serif;letter-spacing:1px;">PROBABILIDAD DE ÉXITO</span>
+      <span style="font-size:22px;font-weight:600;font-family:Cinzel,serif;color:${color};">${probAtLeastOne.toFixed(1)}%</span>
+    </div>
+    <div style="background:var(--bg-mid);border-radius:4px;height:6px;margin-bottom:10px;overflow:hidden;">
+      <div style="height:100%;width:${Math.min(probAtLeastOne,100)}%;background:${color};border-radius:4px;transition:width 0.3s;"></div>
+    </div>
+    <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+      📍 Probabilidad actual por apertura: <strong style="color:var(--text-primary)">${currentChance.toFixed(2)}%</strong>${mercyActive ? ' <span style="color:#e74c3c;font-family:Cinzel,serif;font-size:10px;">🔥 PIEDAD ACTIVA</span>' : ''}<br>
+      📦 Aperturas planificadas: <strong style="color:var(--text-primary)">${planned}</strong> (desde la nº ${current+1})<br>
+      🎯 Al menos 1 resultado en esas ${planned} aperturas: <strong style="color:${color}">${probAtLeastOne.toFixed(1)}%</strong>
+    </div>
+  `;
+};
+
+// Initialize calculator on load
+setTimeout(() => window.calcularProbabilidad && window.calcularProbabilidad(), 500);
+
+
+// HoF tab control
+let hofTab = "boss";
+window.setHofTab = function(tab){
+  hofTab = tab;
+  ["boss","hydra","quimera"].forEach(t=>{
+    const btn = document.getElementById("tab-"+t);
+    if(btn){ btn.className = t===tab?"btn btn-gold":"btn"; }
+  });
+  renderHoF();
+};
+
+// Muro functions
+window.abrirMuro = function(){
+  document.getElementById("muro-titulo").value="";
+  document.getElementById("muro-texto").value="";
+  document.getElementById("muro-tipo").value="general";
+  document.getElementById("muro-overlay").classList.add("open");
+  setTimeout(()=>document.getElementById("muro-titulo").focus(),150);
+};
+
+window.cerrarMuro = function(){ document.getElementById("muro-overlay").classList.remove("open"); };
+
+window.guardarMuro = async function(){
+  const titulo = document.getElementById("muro-titulo").value.trim();
+  const texto = document.getElementById("muro-texto").value.trim();
+  if(!titulo||!texto){ alert("El título y el mensaje son obligatorios."); return; }
+  const id = Date.now().toString();
+  const datos = { id, titulo, texto, tipo: document.getElementById("muro-tipo").value, fecha: new Date().toISOString() };
+  try{
+    syncBar("⚔ Publicando anuncio...", "loading");
+    await setDoc(doc(db, MCOL, id), datos);
+    syncBar("✓ Anuncio publicado", "ok");
+    window.cerrarMuro();
+  } catch(e){ syncBar("✗ Error: "+e.message, "err"); }
+};
+
+window.borrarMensaje = async function(id){
+  if(!confirm("¿Eliminar este anuncio?")) return;
+  try{ await deleteDoc(doc(db, MCOL, id)); } catch(e){ syncBar("✗ Error: "+e.message,"err"); }
+};
 
 </script>
 
