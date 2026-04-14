@@ -108,6 +108,49 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
   .clan-logo{width:52px;height:52px;}
 }
 .app-hidden .app-section{display:none!important;}
+
+/* PROFILE CARD */
+.profile-card{
+  position:fixed;z-index:3000;
+  background:var(--bg-card);
+  border:1px solid var(--border-bright);
+  border-radius:10px;
+  padding:0;
+  width:260px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.7);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.15s;
+  overflow:hidden;
+}
+.profile-card.visible{opacity:1;pointer-events:auto;}
+.profile-card-header{
+  background:linear-gradient(135deg,rgba(122,18,18,0.4) 0%,rgba(10,12,15,0.8) 100%);
+  padding:14px 16px 10px;
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+.profile-card-header::after{
+  content:"";position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);
+}
+.profile-card-name{
+  font-family:Cinzel,serif;font-size:14px;font-weight:600;
+  color:var(--text-primary);margin-bottom:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.profile-card-body{padding:12px 16px;}
+.profile-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:4px 0;border-bottom:1px solid rgba(200,168,75,0.06);
+  font-size:12px;
+}
+.profile-row:last-child{border-bottom:none;}
+.profile-label{color:var(--text-muted);font-family:Cinzel,serif;font-size:10px;letter-spacing:1px;}
+.profile-value{color:var(--text-primary);font-weight:500;}
+.profile-logros{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid rgba(200,168,75,0.1);}
+.name-trigger{cursor:pointer;}
+.name-trigger:hover{color:var(--gold);}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:var(--bg-deep);}
 ::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:3px;}
@@ -157,7 +200,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
   </div>
   <button class="btn-export" onclick="exportarCSV()">⬇ CSV</button>
 </div>
-<div id="sync-bar" class="sync-bar sync-loading">⚔ Conectando con la nube...</div>
+<div id="sync-bar" class="sync-bar"></div>
 <div class="stats-bar" id="stats-bar" class="app-section"></div>
 <div class="legend app-section">
   <span style="font-size:11px;color:var(--text-muted);font-family:Cinzel,serif;letter-spacing:1px;margin-right:4px;">ESTADO:</span>
@@ -236,26 +279,6 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
 
 
 
-<!-- HALL OF FAME -->
-<div style="padding:0 1.5rem;margin-top:2rem;">
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(200,168,75,0.3);">
-    <div style="font-family:Cinzel,serif;font-size:14px;color:var(--gold);letter-spacing:2px;">🏆 HALL OF FAME</div>
-  </div>
-
-  <!-- BOSS TABS -->
-  <div style="display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;">
-    <button class="btn btn-gold" id="tab-boss" onclick="setHofTab('boss')" style="font-size:11px;">👹 Clan Boss</button>
-    <button class="btn" id="tab-hydra" onclick="setHofTab('hydra')" style="font-size:11px;">🐉 Hydra</button>
-    <button class="btn" id="tab-quimera" onclick="setHofTab('quimera')" style="font-size:11px;">🔥 Quimera</button>
-  </div>
-
-  <!-- PODIO -->
-  <div id="hof-podio" style="display:flex;justify-content:center;align-items:flex-end;gap:12px;margin-bottom:2rem;flex-wrap:wrap;"></div>
-
-  <!-- RANKING COMPLETO -->
-  <div id="hof-ranking" style="overflow-x:auto;"></div>
-</div>
-
 <!-- MURO DEL CLAN -->
 <div style="padding:0 1.5rem;margin-top:2rem;margin-bottom:3rem;">
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(200,168,75,0.3);">
@@ -289,6 +312,47 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
 </div>
 
 
+
+<!-- HALL OF FAME -->
+<div style="padding:0 1.5rem;margin-top:2rem;">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(200,168,75,0.3);">
+    <div style="font-family:Cinzel,serif;font-size:14px;color:var(--gold);letter-spacing:2px;">🏆 HALL OF FAME</div>
+  </div>
+
+  <!-- BOSS TABS -->
+  <div style="display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;">
+    <button class="btn btn-gold" id="tab-boss" onclick="setHofTab('boss')" style="font-size:11px;">👹 Clan Boss</button>
+    <button class="btn" id="tab-hydra" onclick="setHofTab('hydra')" style="font-size:11px;">🐉 Hydra</button>
+    <button class="btn" id="tab-quimera" onclick="setHofTab('quimera')" style="font-size:11px;">🔥 Quimera</button>
+  </div>
+
+  <!-- PODIO -->
+  <div id="hof-podio" style="display:flex;justify-content:center;align-items:flex-end;gap:12px;margin-bottom:2rem;flex-wrap:wrap;"></div>
+
+  <!-- RANKING COMPLETO -->
+  <div id="hof-ranking" style="overflow-x:auto;"></div>
+</div>
+
+
+<!-- TRACKER DE PIEDAD -->
+<div style="padding:0 1.5rem;margin-top:2rem;margin-bottom:1rem;">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(200,168,75,0.3);">
+    <div style="font-family:Cinzel,serif;font-size:14px;color:var(--gold);letter-spacing:2px;">💎 TRACKER DE PIEDAD</div>
+    <div style="font-size:11px;color:var(--text-muted);font-family:Crimson Pro,serif;font-style:italic;">Selecciona tu nombre y lleva el control de tus aperturas</div>
+  </div>
+  <div style="margin-bottom:1rem;">
+    <select id="pity-select" onchange="window.cargarPity()" style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-primary);padding:8px 12px;border-radius:4px;font-family:Cinzel,serif;font-size:12px;letter-spacing:1px;outline:none;width:100%;max-width:300px;">
+      <option value="">-- Selecciona tu guerrero --</option>
+    </select>
+  </div>
+  <div id="pity-tracker-content" style="display:none;">
+    <div id="pity-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;"></div>
+    <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-gold" onclick="window.guardarPity()" style="font-size:11px;">💾 Guardar progreso</button>
+      <button class="btn" onclick="window.resetPityAll()" style="font-size:11px;border-color:rgba(192,57,43,0.4);color:#e74c3c;">↺ Resetear todo</button>
+    </div>
+  </div>
+</div>
 <!-- MODAL DAÑOS MIEMBRO -->
 <div class="modal-overlay" id="damage-overlay">
   <div class="modal" style="max-width:380px;">
@@ -363,7 +427,7 @@ td{padding:9px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBss-5mbXhe4UADlUKBSm9FVTGWdosmrvg",
@@ -469,7 +533,7 @@ function render(){
     const rc=m.conexion==="inactivo"?" class=\"flag-inactive\"":" ";
     const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓</span>":"<span class=\"wa-no\">✗</span>";
     return`<tr${rc}>
-      <td><div class="name-cell">${dot(m.conexion)}<span style="overflow:hidden;text-overflow:ellipsis" title="${m.nombre}">${m.nombre}</span><span style="margin-left:4px;white-space:nowrap">${renderLogrosBadges(m,miembros)}</span></div></td>
+      <td><div class="name-cell">${dot(m.conexion)}<span class="name-trigger" style="overflow:hidden;text-overflow:ellipsis" title="${m.nombre}" onmouseenter="onProfileEnter(event,'${m.id}','miembros')" onmouseleave="onProfileLeave()" onclick="onProfileTap(event,'${m.id}','miembros')">${m.nombre}</span><span style="margin-left:4px;white-space:nowrap">${renderLogrosBadges(m,miembros)}</span></div></td>
       <td>${fF(m.llegada)}</td><td style="text-align:center">${fD(m.llegada)}</td><td title="${fP(m.poder)}">${fP(m.poder)}</td>
       <td>${st(parseInt(m.actividad)||1)}</td><td>${rB(m.rango)}</td>
       <td style="text-align:center">${wa}</td>
@@ -484,7 +548,7 @@ function render(){
     const ic=m.conexion==="inactivo"?" inactive":"";
     const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓ WA</span>":"<span class=\"wa-no\">✗ WA</span>";
     return`<div class="m-card${ic}">
-      <div class="m-card-header"><span class="m-name">${dot(m.conexion)}${m.nombre} <span style="font-size:13px">${renderLogrosBadges(m,miembros)}</span></span>
+      <div class="m-card-header"><span class="m-name" onclick="onProfileTap(event,'${m.id}','miembros')" style="cursor:pointer">${dot(m.conexion)}${m.nombre} <span style="font-size:13px">${renderLogrosBadges(m,miembros)}</span></span>
       <div style="display:flex;gap:6px;align-items:center">${rB(m.rango)} ${wa}</div></div>
       <div class="m-card-body">
         <div class="m-field"><span class="m-field-label">Estado</span><span class="m-field-val">${estadoLabel(m.conexion)}</span></div>
@@ -577,17 +641,7 @@ window.exportarCSV = function(){
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"}));a.download="VALHALLA_CP_"+new Date().toISOString().slice(0,10)+".csv";a.click();
 };
 
-// Escuchar cambios en tiempo real
-syncBar("⚔ Conectando con la nube...", "loading");
-onSnapshot(collection(db, COL), (snapshot) => {
-  miembros = snapshot.docs.map(d => d.data());
-  render();
-  renderHoF();
-  syncBar("✓ Sincronizado", "ok");
-  setTimeout(()=>{ if(rolActual) aplicarPermisosTabla(); }, 50);
-}, (error) => {
-  syncBar("✗ Sin conexión — modo local", "err");
-});
+
 
 
 function renderAliados(){
@@ -597,7 +651,7 @@ function renderAliados(){
   document.getElementById("tbody-aliados").innerHTML = empty?"":aliados.map(m=>{
     const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓</span>":"<span class=\"wa-no\">✗</span>";
     return`<tr style="border-bottom:1px solid rgba(200,168,75,0.06)">
-      <td><div class="name-cell">${dot(m.conexion)}<span title="${m.nombre}">${m.nombre}</span></div></td>
+      <td><div class="name-cell">${dot(m.conexion)}<span class="name-trigger" title="${m.nombre}" onmouseenter="onProfileEnter(event,'${m.id}','aliados')" onmouseleave="onProfileLeave()" onclick="onProfileTap(event,'${m.id}','aliados')">${m.nombre}</span></div></td>
       <td>${fF(m.llegada)}</td><td style="text-align:center">${fD(m.llegada)}</td>
       <td title="${fP(m.poder)}">${fP(m.poder)}</td>
       <td>${st(parseInt(m.actividad)||1)}</td>
@@ -613,7 +667,7 @@ function renderAliados(){
     const ic=m.conexion==="inactivo"?" inactive":"";
     const wa=m.whatsapp==="si"?"<span class=\"wa-yes\">✓ WA</span>":"<span class=\"wa-no\">✗ WA</span>";
     return`<div class="m-card${ic}" style="border-color:rgba(200,168,75,0.3)">
-      <div class="m-card-header"><span class="m-name">${dot(m.conexion)}${m.nombre}</span>
+      <div class="m-card-header"><span class="m-name" onclick="onProfileTap(event,'${m.id}','aliados')" style="cursor:pointer">${dot(m.conexion)}${m.nombre}</span>
       <div style="display:flex;gap:6px;align-items:center"><span class="badge b-veterano">Aliado</span> ${wa}</div></div>
       <div class="m-card-body">
         <div class="m-field"><span class="m-field-label">Días en el Valhalla</span><span class="m-field-val">${fD(m.llegada)}</span></div>
@@ -631,7 +685,48 @@ function renderAliados(){
 }
 
 
-// Escuchar aliados en tiempo real
+
+document.getElementById("muro-overlay").addEventListener("click",e=>{if(e.target.id==="muro-overlay")cerrarMuro();});
+
+
+// ============ SISTEMA DE ACCESO ============
+const PASS_LIDER = "v1aodin24";
+const PASS_MIEMBRO = "valhalla24";
+let rolActual = null; // "lider" | "miembro" | "visitante"
+let tipoAcceso = null;
+
+
+let firebaseIniciado = false;
+function iniciarFirebase(){
+  if(firebaseIniciado) return;
+  firebaseIniciado = true;
+  syncBar("⚔ Conectando con la nube...", "loading");
+  
+  // Timeout si Firebase no responde en 10 segundos
+  let firebaseConectado = false;
+  const timeoutFirebase = setTimeout(()=>{
+    if(!firebaseConectado){
+      syncBar("✗ Error de conexión — recarga la página", "err");
+    }
+  }, 10000);
+
+  onSnapshot(collection(db, COL), (snapshot) => {
+    firebaseConectado = true;
+    clearTimeout(timeoutFirebase);
+    miembros = snapshot.docs.map(d => d.data());
+    render();
+    renderHoF();
+    poblarSelectPity();
+    syncBar("✓ Sincronizado", "ok");
+    setTimeout(()=>{ if(rolActual) aplicarPermisosTabla(); }, 50);
+  }, (error) => {
+    firebaseConectado = true;
+    clearTimeout(timeoutFirebase);
+    console.error("Firebase error:", error);
+    syncBar("✗ Error Firebase: " + error.code, "err");
+  });
+
+  // Escuchar aliados en tiempo real
 onSnapshot(collection(db, ACOL), async (snapshot) => {
   if(snapshot.empty){
     aliados = [];
@@ -711,6 +806,7 @@ function renderHoF(){
 
 // ============ MURO DEL CLAN ============
 const MCOL = "muro";
+const PITY_COL = "pity";
 let mensajes = [];
 
 window.abrirMuro = function(){
@@ -771,19 +867,15 @@ onSnapshot(collection(db, MCOL), (snapshot) => {
   renderMuro();
 }, (error) => { console.log("Muro error:", error); });
 
-document.getElementById("muro-overlay").addEventListener("click",e=>{if(e.target.id==="muro-overlay")cerrarMuro();});
 
-
-// ============ SISTEMA DE ACCESO ============
-const PASS_LIDER = "v1aodin24";
-const PASS_MIEMBRO = "valhalla24";
-let rolActual = null; // "lider" | "miembro" | "visitante"
-let tipoAcceso = null;
+  
+}
 
 function mostrarApp(){
   document.getElementById("login-screen").style.display="none";
   document.getElementById("main-app").style.display="";
   document.body.classList.remove("app-hidden");
+  iniciarFirebase();
   const badge = document.getElementById("rol-badge");
   badge.style.display="block";
 
@@ -913,6 +1005,292 @@ document.getElementById("damage-overlay").addEventListener("click",e=>{if(e.targ
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){cerrarModal();cerrarConfirm();cerrarMuro();cerrarPass();cerrarDamage();}});
 document.getElementById("modal-overlay").addEventListener("click",e=>{if(e.target.id==="modal-overlay")cerrarModal();});
 document.getElementById("confirm-overlay").addEventListener("click",e=>{if(e.target.id==="confirm-overlay")cerrarConfirm();});
+
+// ============ TRACKER DE PIEDAD ============
+const PITY_COL = "pity";
+
+// Shard definitions with mercy rules
+const SHARDS = [
+  {
+    id: "antiguo", name: "Antiguo", emoji: "🔵",
+    color: "#60a5fa",
+    tracks: [
+      { id: "leg", label: "Legendario", base: 0.5, mercyAt: 200, mercyInc: 0.5, max: 220 },
+      { id: "epi", label: "Épico",      base: 8.0, mercyAt: 20,  mercyInc: 2.0, max: 40  }
+    ]
+  },
+  {
+    id: "vacio", name: "Vacío", emoji: "🟣",
+    color: "#a78bfa",
+    tracks: [
+      { id: "leg", label: "Legendario", base: 0.5, mercyAt: 200, mercyInc: 0.5, max: 220 },
+      { id: "epi", label: "Épico",      base: 8.0, mercyAt: 20,  mercyInc: 2.0, max: 40  }
+    ]
+  },
+  {
+    id: "sagrado", name: "Sagrado", emoji: "🟡",
+    color: "#C8A84B",
+    tracks: [
+      { id: "leg", label: "Legendario", base: 6.0, mercyAt: 12, mercyInc: 2.0, max: 50 }
+    ]
+  },
+  {
+    id: "primordial", name: "Primordial", emoji: "🔴",
+    color: "#e74c3c",
+    tracks: [
+      { id: "leg",  label: "Legendario", base: 2.0,  mercyAt: 75,  mercyInc: 1.0,  max: 200 },
+      { id: "myt",  label: "Mítico",     base: 0.5,  mercyAt: 200, mercyInc: 10.0, max: 210 }
+    ]
+  },
+  {
+    id: "restos", name: "Restos", emoji: "💀",
+    color: "#9ca3af",
+    tracks: [
+      { id: "myt", label: "Mítico (2.5%)", base: 2.5, mercyAt: null, mercyInc: 0, max: null }
+    ]
+  }
+];
+
+let pityData = {}; // { shardId_trackId: count }
+let pityUserId = null;
+
+function calcPityChance(shard, track, count) {
+  if (!track.mercyAt || count < track.mercyAt) return track.base;
+  return track.base + (count - track.mercyAt) * track.mercyInc;
+}
+
+function calcPityPercent(track, count) {
+  if (!track.max) return (count / 200) * 100; // restos: arbitrary 200 as visual max
+  return Math.min((count / track.max) * 100, 100);
+}
+
+function pityStatusColor(track, count) {
+  const pct = calcPityPercent(track, count);
+  if (pct >= 90) return "#e74c3c";
+  if (pct >= 60) return "#f39c12";
+  return "var(--online-col)";
+}
+
+function renderPityCards() {
+  const container = document.getElementById("pity-cards");
+  if (!container) return;
+
+  container.innerHTML = SHARDS.map(shard => {
+    const tracksHtml = shard.tracks.map(track => {
+      const key = shard.id + "_" + track.id;
+      const count = pityData[key] || 0;
+      const chance = calcPityChance(shard, track, count);
+      const pct = calcPityPercent(track, count);
+      const statusColor = pityStatusColor(track, count);
+      const mercyActive = track.mercyAt && count >= track.mercyAt;
+      const maxLabel = track.max ? track.max : "∞";
+
+      return `<div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:11px;color:var(--text-secondary);font-family:Cinzel,serif;letter-spacing:1px;">${track.label}</span>
+          <span style="font-size:11px;color:${statusColor};font-family:Cinzel,serif;">${count}/${maxLabel} · ${chance.toFixed(1)}%${mercyActive ? " 🔥" : ""}</span>
+        </div>
+        <div style="background:var(--bg-mid);border-radius:4px;height:8px;overflow:hidden;margin-bottom:6px;">
+          <div style="height:100%;width:${pct}%;background:${statusColor};border-radius:4px;transition:width 0.3s;"></div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button onclick="window.pityAdd('${key}', 1)" style="background:rgba(200,168,75,0.15);border:1px solid rgba(200,168,75,0.3);color:var(--gold);border-radius:4px;padding:3px 10px;cursor:pointer;font-size:13px;font-family:Cinzel,serif;">+1</button>
+          <button onclick="window.pityAdd('${key}', 5)" style="background:rgba(200,168,75,0.1);border:1px solid rgba(200,168,75,0.2);color:var(--gold);border-radius:4px;padding:3px 10px;cursor:pointer;font-size:13px;font-family:Cinzel,serif;">+5</button>
+          <button onclick="window.pityAdd('${key}', 10)" style="background:rgba(200,168,75,0.08);border:1px solid rgba(200,168,75,0.15);color:var(--gold);border-radius:4px;padding:3px 10px;cursor:pointer;font-size:13px;font-family:Cinzel,serif;">+10</button>
+          <button onclick="window.pityReset('${key}')" style="background:rgba(192,57,43,0.1);border:1px solid rgba(192,57,43,0.25);color:#e74c3c;border-radius:4px;padding:3px 10px;cursor:pointer;font-size:12px;font-family:Cinzel,serif;">↺</button>
+          ${mercyActive ? '<span style="font-size:10px;color:#e74c3c;font-family:Cinzel,serif;letter-spacing:1px;">¡PIEDAD ACTIVA!</span>' : ""}
+        </div>
+      </div>`;
+    }).join("");
+
+    return `<div style="background:var(--bg-card);border:1px solid ${shard.color}33;border-top:2px solid ${shard.color};border-radius:8px;padding:14px 16px;">
+      <div style="font-family:Cinzel,serif;font-size:13px;color:${shard.color};letter-spacing:2px;margin-bottom:12px;">${shard.emoji} ${shard.name.toUpperCase()}</div>
+      ${tracksHtml}
+    </div>`;
+  }).join("");
+}
+
+window.pityAdd = function(key, n) {
+  pityData[key] = (pityData[key] || 0) + n;
+  renderPityCards();
+};
+
+window.pityReset = function(key) {
+  pityData[key] = 0;
+  renderPityCards();
+};
+
+window.resetPityAll = function() {
+  if (!confirm("¿Resetear TODOS los contadores de piedad?")) return;
+  pityData = {};
+  renderPityCards();
+};
+
+window.cargarPity = async function() {
+  const uid = document.getElementById("pity-select").value;
+  if (!uid) {
+    document.getElementById("pity-tracker-content").style.display = "none";
+    return;
+  }
+  pityUserId = uid;
+  try {
+    const docRef = doc(db, PITY_COL, uid);
+    const snap = await getDoc(docRef);
+    pityData = snap.exists() ? (snap.data().counters || {}) : {};
+  } catch(e) {
+    pityData = {};
+  }
+  document.getElementById("pity-tracker-content").style.display = "block";
+  renderPityCards();
+};
+
+window.guardarPity = async function() {
+  if (!pityUserId) return;
+  try {
+    syncBar("💾 Guardando piedad...", "loading");
+    await setDoc(doc(db, PITY_COL, pityUserId), { counters: pityData, uid: pityUserId });
+    syncBar("✓ Progreso guardado", "ok");
+  } catch(e) {
+    syncBar("✗ Error: " + e.message, "err");
+  }
+};
+
+function poblarSelectPity() {
+  const sel = document.getElementById("pity-select");
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">-- Selecciona tu guerrero --</option>' +
+    [...miembros, ...aliados].map(m =>
+      `<option value="${m.id}" ${m.id === current ? "selected" : ""}>${m.nombre}</option>`
+    ).join("");
+}
+
+
+// ============ PROFILE CARD ============
+let profileTimeout = null;
+let profileVisible = false;
+const card = document.getElementById("profile-card");
+
+function showProfileCard(m, sourceList, x, y) {
+  const allMembers = sourceList === "aliados" ? aliados : miembros;
+  const logros = getLogros(m, miembros);
+  
+  document.getElementById("pc-nombre").textContent = m.nombre;
+  document.getElementById("pc-rango").innerHTML = rB(m.rango || "Aliado");
+  document.getElementById("pc-logros").innerHTML = logros.map(l =>
+    `<span title="${l.title}: ${l.desc}" style="font-size:16px;cursor:default">${l.icon}</span>`
+  ).join("") || '<span style="font-size:10px;color:var(--text-muted);font-family:Cinzel,serif;">Sin logros aún</span>';
+  
+  document.getElementById("pc-poder").textContent = fP(m.poder);
+  document.getElementById("pc-dias").textContent = fD(m.llegada);
+  document.getElementById("pc-estado").textContent = estadoLabel(m.conexion);
+  document.getElementById("pc-wa").textContent = m.whatsapp === "si" ? "✓ Sí" : "✗ No";
+  document.getElementById("pc-boss").textContent = fDmg(m.boss);
+  document.getElementById("pc-hydra").textContent = fDmg(m.hydra);
+  document.getElementById("pc-quimera").textContent = fDmg(m.quimera);
+  
+  const notasEl = document.getElementById("pc-notas");
+  if(m.notas) { notasEl.textContent = m.notas; notasEl.style.display = "block"; }
+  else { notasEl.style.display = "none"; }
+
+  // Position card
+  const cardW = 260, cardH = 340;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  let cx = x + 12, cy = y + 12;
+  if(cx + cardW > vw - 10) cx = x - cardW - 12;
+  if(cy + cardH > vh - 10) cy = vh - cardH - 10;
+  if(cx < 10) cx = 10;
+  if(cy < 10) cy = 10;
+  
+  card.style.left = cx + "px";
+  card.style.top = cy + "px";
+  card.classList.add("visible");
+  profileVisible = true;
+}
+
+function hideProfileCard() {
+  card.classList.remove("visible");
+  profileVisible = false;
+}
+
+// Detect touch device
+const isTouchDevice = () => window.matchMedia("(hover: none)").matches;
+
+window.onProfileEnter = function(e, id, source) {
+  if(isTouchDevice()) return;
+  clearTimeout(profileTimeout);
+  const m = (source === "aliados" ? aliados : miembros).find(x => x.id == id);
+  if(!m) return;
+  profileTimeout = setTimeout(() => showProfileCard(m, source, e.clientX, e.clientY), 300);
+};
+
+window.onProfileLeave = function() {
+  if(isTouchDevice()) return;
+  clearTimeout(profileTimeout);
+  profileTimeout = setTimeout(hideProfileCard, 200);
+};
+
+window.onProfileTap = function(e, id, source) {
+  if(!isTouchDevice()) return;
+  e.stopPropagation();
+  const m = (source === "aliados" ? aliados : miembros).find(x => x.id == id);
+  if(!m) return;
+  if(profileVisible) { hideProfileCard(); return; }
+  const rect = e.target.getBoundingClientRect();
+  showProfileCard(m, source, rect.left, rect.bottom);
+};
+
+// Close on outside click
+document.addEventListener("click", (e) => {
+  if(profileVisible && !card.contains(e.target)) hideProfileCard();
+});
+
+card.addEventListener("mouseenter", () => clearTimeout(profileTimeout));
+card.addEventListener("mouseleave", () => {
+  profileTimeout = setTimeout(hideProfileCard, 200);
+});
+
 </script>
+
+<!-- PROFILE CARD -->
+<div class="profile-card" id="profile-card">
+  <div class="profile-card-header">
+    <div class="profile-card-name" id="pc-nombre"></div>
+    <div id="pc-rango" style="margin-top:2px;"></div>
+    <div id="pc-logros" class="profile-logros"></div>
+  </div>
+  <div class="profile-card-body">
+    <div class="profile-row">
+      <span class="profile-label">Poder</span>
+      <span class="profile-value" id="pc-poder"></span>
+    </div>
+    <div class="profile-row">
+      <span class="profile-label">Días en el Valhalla</span>
+      <span class="profile-value" id="pc-dias"></span>
+    </div>
+    <div class="profile-row">
+      <span class="profile-label">Estado</span>
+      <span class="profile-value" id="pc-estado"></span>
+    </div>
+    <div class="profile-row">
+      <span class="profile-label">WhatsApp</span>
+      <span class="profile-value" id="pc-wa"></span>
+    </div>
+    <div class="profile-row">
+      <span class="profile-label">👹 Clan Boss</span>
+      <span class="profile-value" id="pc-boss"></span>
+    </div>
+    <div class="profile-row">
+      <span class="profile-label">🐉 Hydra</span>
+      <span class="profile-value" id="pc-hydra"></span>
+    </div>
+    <div class="profile-row">
+      <span class="profile-label">🔥 Quimera</span>
+      <span class="profile-value" id="pc-quimera"></span>
+    </div>
+    <div id="pc-notas" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(200,168,75,0.08);font-size:11px;color:var(--text-muted);font-style:italic;display:none;"></div>
+  </div>
+</div>
+
 </body>
 </html>
