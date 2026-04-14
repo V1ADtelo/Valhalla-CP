@@ -387,42 +387,7 @@ function syncBar(msg, tipo){
   if(tipo === "ok") setTimeout(()=>{ el.style.display="none"; }, 3000);
 }
 
-const defaultData = [
-  {id:"1",nombre:"Warbury",llegada:"2024-09-01",conexion:"online",xp:21217,poder:10.45,actividad:1,rango:"Veterano",whatsapp:"si",notas:""},
-  {id:"2",nombre:"SentryK",llegada:"2024-01-15",conexion:"reciente",xp:38962,poder:28.11,actividad:1,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"3",nombre:"**ASRAEL**",llegada:"2024-03-10",conexion:"online",xp:4627,poder:25.4,actividad:2,rango:"Miembro",whatsapp:"no",notas:""},
-  {id:"4",nombre:"[V1A]zZzeT@",llegada:"2024-02-20",conexion:"online",xp:34626,poder:24.48,actividad:2,rango:"Veterano",whatsapp:"si",notas:""},
-  {id:"5",nombre:"Jmbasulto",llegada:"2023-11-05",conexion:"reciente",xp:41658,poder:22.31,actividad:1,rango:"Líder",whatsapp:"si",notas:""},
-  {id:"6",nombre:"Arevol",llegada:"2024-01-08",conexion:"online",xp:15032,poder:21.22,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"7",nombre:"Pukitosllstar",llegada:"2024-04-01",conexion:"reciente",xp:35695,poder:20.7,actividad:1,rango:"Miembro",whatsapp:"no",notas:""},
-  {id:"8",nombre:"Yochuta",llegada:"2024-05-12",conexion:"online",xp:12000,poder:18.5,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"9",nombre:"RaulR91",llegada:"2024-06-01",conexion:"reciente",xp:9800,poder:15.0,actividad:1,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"10",nombre:"Darkleto",llegada:"2024-03-22",conexion:"inactivo",xp:3200,poder:12.3,actividad:1,rango:"Miembro",whatsapp:"no",notas:"Sin actividad reciente"},
-  {id:"11",nombre:"Arevol.01",llegada:"2024-07-10",conexion:"online",xp:22000,poder:19.8,actividad:3,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"12",nombre:"BillyKnight",llegada:"2024-08-05",conexion:"reciente",xp:17500,poder:17.2,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"13",nombre:"Zidane357",llegada:"2024-02-14",conexion:"inactivo",xp:2100,poder:9.5,actividad:1,rango:"Miembro",whatsapp:"no",notas:"Candidato a expulsión"},
-  {id:"14",nombre:"orph@nbutch3r",llegada:"2024-09-15",conexion:"online",xp:31000,poder:23.6,actividad:3,rango:"Veterano",whatsapp:"si",notas:""},
-  {id:"15",nombre:"ELPACHORRA",llegada:"2024-01-30",conexion:"reciente",xp:14200,poder:16.7,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"16",nombre:"[V1A]Arectar",llegada:"2023-12-01",conexion:"online",xp:28900,poder:22.0,actividad:3,rango:"Veterano",whatsapp:"si",notas:""},
-  {id:"17",nombre:"[V1A] Dtelo",llegada:"2023-10-20",conexion:"online",xp:21217,poder:10.45,actividad:1,rango:"Veterano",whatsapp:"si",notas:""},
-  {id:"18",nombre:"PaladinJotah",llegada:"2024-05-05",conexion:"reciente",xp:19300,poder:20.1,actividad:2,rango:"Miembro",whatsapp:"no",notas:""},
-  {id:"19",nombre:"[V1A]Joseles",llegada:"2024-04-18",conexion:"online",xp:25600,poder:21.9,actividad:2,rango:"Veterano",whatsapp:"si",notas:""},
-  {id:"20",nombre:"[V1A] Kryla",llegada:"2024-06-28",conexion:"online",xp:33400,poder:24.0,actividad:3,rango:"Veterano",whatsapp:"si",notas:""},
-  {id:"21",nombre:"PukitoslIstar",llegada:"2024-03-05",conexion:"reciente",xp:11800,poder:14.5,actividad:1,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"22",nombre:"Nygran",llegada:"2024-07-22",conexion:"online",xp:18700,poder:17.8,actividad:2,rango:"Miembro",whatsapp:"no",notas:""},
-  {id:"23",nombre:"ASRAEL",llegada:"2024-02-02",conexion:"inactivo",xp:1500,poder:8.0,actividad:1,rango:"Miembro",whatsapp:"no",notas:"Candidato a expulsión"},
-  {id:"24",nombre:"Kitxu",llegada:"2024-08-19",conexion:"online",xp:27300,poder:22.8,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"25",nombre:"Verne2099",llegada:"2024-09-10",conexion:"reciente",xp:16100,poder:16.0,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"26",nombre:"Nacheas Haze",llegada:"2024-05-30",conexion:"online",xp:29800,poder:23.1,actividad:3,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"27",nombre:"Cr787",llegada:"2024-07-01",conexion:"inactivo",xp:800,poder:7.2,actividad:1,rango:"Miembro",whatsapp:"no",notas:"Sin actividad"},
-  {id:"28",nombre:"Xhennon",llegada:"2024-09-25",conexion:"online",xp:23500,poder:21.5,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"29",nombre:"Sir Zerg",llegada:"2024-10-01",conexion:"reciente",xp:13400,poder:15.9,actividad:2,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"30",nombre:"NecochenseAmor",llegada:"2024-08-28",conexion:"online",xp:30200,poder:23.4,actividad:3,rango:"Miembro",whatsapp:"si",notas:""},
-  {id:"31",nombre:"Kaiiin",llegada:"2024-11-05",conexion:"online",xp:19900,poder:18.7,actividad:2,rango:"Miembro",whatsapp:"no",notas:""},
-  {id:"32",nombre:"Joard_7",llegada:"2024-10-15",conexion:"reciente",xp:15600,poder:16.3,actividad:1,rango:"Miembro",whatsapp:"si",notas:""}
-];
-
-let miembros = [];
+// Datos por defecto eliminados - Firebase es la fuente de verdad
 
 const defaultAliados = [
   {id:"a1",nombre:"Ejemplo Aliado",llegada:"2024-06-01",conexion:"online",xp:0,poder:0,actividad:1,rango:"Aliado",whatsapp:"si",notas:"Fuera temporalmente para crecer"}
@@ -614,20 +579,12 @@ window.exportarCSV = function(){
 
 // Escuchar cambios en tiempo real
 syncBar("⚔ Conectando con la nube...", "loading");
-onSnapshot(collection(db, COL), async (snapshot) => {
-  if(snapshot.empty){
-    // Primera vez: cargar datos por defecto
-    syncBar("⚔ Cargando datos iniciales...", "loading");
-    for(const m of defaultData){
-      await setDoc(doc(db, COL, m.id), m);
-    }
-  } else {
-    miembros = snapshot.docs.map(d => d.data());
-    render();
-    renderHoF();
-    syncBar("✓ Sincronizado", "ok");
-    setTimeout(()=>{ if(rolActual) aplicarPermisosTabla(); }, 50);
-  }
+onSnapshot(collection(db, COL), (snapshot) => {
+  miembros = snapshot.docs.map(d => d.data());
+  render();
+  renderHoF();
+  syncBar("✓ Sincronizado", "ok");
+  setTimeout(()=>{ if(rolActual) aplicarPermisosTabla(); }, 50);
 }, (error) => {
   syncBar("✗ Sin conexión — modo local", "err");
 });
