@@ -561,6 +561,7 @@ function estadoLabel(c) { return c === "inactivo" ? "Inactivo" : "Activo"; }
 function parseDmg(s) {
   if (!s || s === 0 || s === "") return 0;
   const str = String(s).trim().toUpperCase().replace(",", ".");
+  if (str.endsWith("B")) return parseFloat(str) * 1000000000;
   if (str.endsWith("M")) return parseFloat(str) * 1000000;
   if (str.endsWith("K")) return parseFloat(str) * 1000;
   return parseFloat(str) || 0;
